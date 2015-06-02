@@ -1,8 +1,17 @@
 Package: influenceR
-Title: What the Package Does (one line, title case)
+Title: Compute Node Significance Measures on Networks
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph)
+Authors@R: as.person(c(
+    "Simon Jacobs <sdjacobs@uchicago.edu> [aut]", 
+    "Aditya Khanna <khanna7@uchicago.edu> [cre]"
+  ))
+Description: Compute various node significance measures on networks. This description should be longer.
 Depends: R (>= 3.1.2)
-License: What license is it under?
+License: somelicense
 LazyData: true
+Imports:
+    igraph (>= 0.7.1),
+    Matrix (>= 1.1-4),
+    Rcpp (>= 0.10.5)
+
+

@@ -1,1 +1,4 @@
 exportPattern("^[^\\.]")
+import(igraph)
+import(Matrix)
+import(Rcpp)
