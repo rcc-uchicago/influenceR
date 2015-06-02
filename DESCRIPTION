@@ -13,5 +13,4 @@ Imports:
     igraph (>= 0.7.1),
     Matrix (>= 1.1-4),
     Rcpp (>= 0.10.5)
-
-
+NeedsCompilation: yes

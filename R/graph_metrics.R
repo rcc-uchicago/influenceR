@@ -29,23 +29,9 @@ ens <- function(g) {
 
 constraint <- function(g) {
   
-  # This needs to be moved to a separate file.
-  cppFunction('NumericVector c_process_sparse(IntegerVector I, IntegerVector J, NumericVector X, NumericVector Ai, NumericVector deg) {
-    int n = X.size();
-    NumericVector out(n);
-
-    for(int p = 0; p < n; p++) {
-      int j = J[p];
-      out[p] = X[p] * Ai[j] * deg[j];
-      out[p] = (out[p] == 0 ? 0 : 1/out[p]);
-    }
-
-    return out;
-  }')
-  
   process_sparse <- function(A, Ai, deg) {
     M <- as(A, 'TsparseMatrix')
-    x <- c_process_sparse(M@i, M@j, M@x, Ai, deg)
+    x <- .Call("process_sparse_R", M@i, M@j, M@x, Ai, deg, nnzero(M))
     M@x <- x
     M
   }
@@ -81,4 +67,9 @@ main <- function(args) {
   x <- centrality[[func]](graph)
   
   write.table(x, quote=F, row.names=F, col.names=F)
+}
+
+# Load this package's dynamic library.
+.onLoad <- function(libname, pkgname){
+  library.dynam("influenceR", package=pkgname, lib.loc=libname)
 }
