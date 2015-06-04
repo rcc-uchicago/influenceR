@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#D=$(dirname $0)
+D=../snap/test
+
+tol=0
+thr=0
+
+dir=`ls $1/seed-??`
+
+RN=$1/report.txt
+
+tmpnm=tmp.$$
+
+${D}/eval_seed_community_detection --header > ${RN}
+
+for ALG in "CNM" "MB" ; do
+    for RR in 1 ; do
+	for STOP in 1 ; do
+	    for i in $dir ; do
+		echo "${D}/eval_seed_community_detection $i ${ALG} ${RR} ${STOP} $tol $thr>> ${RN}"
+		export DUMP_COMM="$i.${ALG}.${RR}.${STOP}.comm"
+		if ${D}/eval_seed_community_detection $i ${ALG} ${RR} ${STOP} $tol $thr > ${tmpnm} ; then
+		    cat ${tmpnm} >> ${RN}
+		fi
+		rm -f ${tmpnm}
+	    done
+	done
+    done
+done
+
+for ALG in "BFS" "PR" "RW" ; do
+    for i in $dir ; do
+	echo "${D}/eval_seed_community_detection $i ${ALG} 1 1 $tol $thr>> ${RN}"
+	export DUMP_COMM="$i.${ALG}.1.1.comm"
+	if ${D}/eval_seed_community_detection $i ${ALG} 1 1 $tol $thr > ${tmpnm} ; then
+	    cat ${tmpnm} >> ${RN}
+	fi
+	rm -f ${tmpnm}
+    done
+done

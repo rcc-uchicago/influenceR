@@ -1,0 +1,12 @@
+SNAP = snap-0.4
+PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(SNAP)/include 
+PKG_LIBS = $(SHLIB_OPENMP_CFLAGS) $(SNAP)/lib/.libs/libsnap.a
+
+.PHONY: all snap
+
+all: $(SHLIB)
+$(SHLIB): snap
+
+snap:
+	(cd snap-0.4; ./configure --enable-openmp ; make)
+

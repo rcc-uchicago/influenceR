@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Arguments: graph community-array
+
+for z in 2 3 5 10 ; do
+    DIR=comm-$(printf "%02d" ${z})
+    cd ${DIR}
+    for x in `seq -f "%02g" 1 10` ; do
+	NSEED=${z};
+	(echo "$1" ;
+	    echo $NSEED;
+	    ../../snap/test/community-list-to-seeds $NSEED "$2") > seed-${x} ;
+    done;
+    cd ..;
+done

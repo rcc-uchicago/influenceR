@@ -14,9 +14,22 @@ eigencentrality <- function(g) {
 }
 
 # 1/2 the values of our betweenness code, which is because this is UNDIRECTED for real
-btwnness <- function(g) {
-  betweenness(g, directed=F) 
+betweenness <- function(g, snap=F) {
+  
+  snap_betweenness <- function(g) { # TODO: this doesn't work when defined at top level of package. why.
+    el <- get.edgelist(g)
+    n <- max(el)
+    m <- length(el)/2 # TODO: for directed too?
+    .Call("snap_betweenness_R", as.integer(el), as.integer(n), as.integer(m))
+  }
+  
+  if (snap)
+    snap_betweenness(g)
+  else
+    igraph::betweenness(g, directed=F) 
 }
+
+
 
 ens <- function(g) {
   A <- get.adjacency(g)   # This will be sparse, which is great.
@@ -62,14 +75,9 @@ main <- function(args) {
   
   graph <- dimacs.to.graph(args[[2]])
   func <- args[[1]]
-  centrality <- c(eigen=eigencentrality, betweenness=btwnness, ens=ens, constraint=constraint)
+  centrality <- c(eigen=eigencentrality, betweenness=betweenness, ens=ens, constraint=constraint)
   
   x <- centrality[[func]](graph)
   
   write.table(x, quote=F, row.names=F, col.names=F)
-}
-
-# Load this package's dynamic library.
-.onLoad <- function(libname, pkgname){
-  library.dynam("influenceR", package=pkgname, lib.loc=libname)
 }

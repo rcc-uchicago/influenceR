@@ -1,0 +1,22 @@
+
+[Aug 31, 2009] Updating SVN repository with new community greedy agglomerative
+               community identification algorithms.
+
+[May 25, 2009] Our IPDPS 2009 paper discusses new data structures and
+               parallel algorithms for dynamic network analysis.
+
+[Apr 03, 2009] SNAP 0.3 has been released. Several bugs have been
+               fixed, and the interface has been cleaned up. Updates 
+               include data structures and traversal algorithms for dynamic 
+               network analysis.
+
+[May 05, 2008] SNAP 0.2 is now available. This version includes a
+               new parallel community identification implementation based on
+               Newman's recursive spectral partitioning algorithm.
+               
+[Feb 12, 2008] SNAP 0.1 is available for download. This is the first SourceForge 
+               release.
+
+[Feb 12, 2008] Our IPDPS 2008 paper presents an overview of SNAP and new 
+               parallel community identification approaches. Slides on SNAP and 
+               a draft user guide have also been posted online.
