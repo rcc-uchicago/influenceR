@@ -8,7 +8,7 @@
 #include "keyplayer-utils.h"
 
 /* single core version: compute better solutions for T seconds */
-void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxsec)
+void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxsec, int *KP)
 {
 	
   int np, rank, new_rank = 0, stop;
@@ -41,6 +41,9 @@ void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxse
 			s[v] = 1;
 	} while(difftime(time(0), start) < maxsec);
   
+  for (int i = 0; i < n; i++)
+    KP[i] = s[i];
+  
 	return;	
 }
 
@@ -49,7 +52,7 @@ void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxse
 	 * send my fit back to the master process.
 	 * get a number back. if it's my rank, broadcast my s array to everyone! 
 */
-void keyplayer_driver_parallel(graph_t *g, int n, int k, double p, double tol, long sec, long maxsec)
+void keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long maxsec, long sec, int *KP)
 {
 	
   int np, rank, new_rank = 0, stop;
@@ -141,4 +144,8 @@ void keyplayer_driver_parallel(graph_t *g, int n, int k, double p, double tol, l
       
   	} while(!stop);
   }
+  
+  int *s = &allsets[0]; // s set for rank 0, which contains the best (as do all &allsets[i*n])
+  for (int i = 0; i < n; i++)
+    KP[i] = s[i];
 }

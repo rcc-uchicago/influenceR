@@ -3,6 +3,7 @@
 #include <graph_metrics.h>
 
 #include "bridging.h"
+#include "keyplayer.h"
 
 #include <R.h>
 #include <Rinternals.h>
@@ -155,6 +156,36 @@ SEXP snap_betweenness_R(SEXP sE, SEXP sn, SEXP sm)
   return sBC;
 }
 
+SEXP snap_keyplayer_R(SEXP sE, SEXP sn, SEXP sm, SEXP sk, SEXP sprob, SEXP stol, SEXP sMaxsec, SEXP sRoundsec) {
+  int n = INTEGER(sn)[0],
+    m = INTEGER(sm)[0],
+    k = INTEGER(sk)[0];
+    
+  double prob = REAL(sprob)[0],
+    tol = REAL(stol)[0];
+    
+  long maxsec = INTEGER(sMaxsec)[0],
+    roundsec = INTEGER(sRoundsec)[0];
+  
+  int *E = INTEGER(sE);
+  graph_t G;
+  int r = read_graph_from_edgelist(&G, E, n, m);
+  
+  
+  SEXP sKP = PROTECT(allocVector(INTSXP, n));
+  int *KP = INTEGER(sKP);
+
+#ifdef OPENMP
+  keyplayer_driver_omp(&G, n, k, prob, tol, maxsec, roundsec, KP);
+#else
+  keyplayer_driver(&G, n, k, prob, tol, maxsec, KP);
+#endif
+  
+  
+  UNPROTECT(1);
+ 
+  return sKP;
+}
 
 /* Rank is rank if this is an MPI call, 0 else */
 SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP sMPI, SEXP srank) {

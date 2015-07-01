@@ -25,7 +25,20 @@ betweenness <- function(g, snap=T) {
   m <- as.integer(length(el)/2) # TODO: for directed too?
   
   .Call("snap_betweenness_R", el_i, n, m, PACKAGE="influenceR")
+}
+
+# g : graph, k : size of set, prob : probability we will accept a lower state,
+# tol : acceptance tolerance, maxsec : total computation budget,
+# roundsec : seconds for a round (in parallel version)
+keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
+  el <- get.edgelist(g)
+  el_i <- as.integer(t(el))
+  n <- as.integer(max(el))
+  m <- as.integer(length(el)/2)
+
+  s <- .Call("snap_keyplayer_R", el_i, n, m, as.integer(k), prob, tol, as.integer(maxsec), as.integer(roundsec), PACKAGE="influenceR")
   
+  which(s>0)
 }
 
 
