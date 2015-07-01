@@ -7,20 +7,6 @@
 #include <graph_defs.h>
 #include <graph_gen.h>
 
-SEXP hello_world() {
-  int size, rank;
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  
-  char c[1024];
-  sprintf(c, "hello from process %d of %d\n", rank, size);
-  
-  SEXP out = PROTECT(mkString(c));
-  
-  UNPROTECT(1);
-  
-  return out;
-}
 
 double bridging_vertex_precomp(graph_t *G, long v, double cls, double *closeness);
 double *main_bridging(graph_t *G, int *edgelist, double *scores);
@@ -28,31 +14,7 @@ double closeness(graph_t *G, long ignore_edge0, long ignore_edge1);
 long BFS_parallel_frontier_expansion_bridging(graph_t* G, long src, long diameter, double *distance, long ignore_edge0, long ignore_edge1 );
 
 
-/* Rank is rank if this is an MPI call, 0 else */
-SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP srank) {
-  int n = INTEGER(sn)[0],
-    m = INTEGER(sm)[0],
-    rank = INTEGER(srank)[0];
-  
-  int *E = INTEGER(sE);
-  graph_t G;
-  int r = read_graph_from_edgelist(&G, E, n, m);
-
-  fprintf(stderr, "hello from r thing\n");
-  
-  SEXP sBC = PROTECT(allocVector(REALSXP, rank==0 ? n : 0));
-  double *BC = REAL(sBC);
-  
-  main_bridging(&G, E, BC);
-  
-  UNPROTECT(1);
- 
-  fprintf(stderr, "goodbye from r thing\b");
-  return sBC;
-}
-
-
-double *main_bridging(graph_t *G, int *edgelist, double *scores)
+double *bridging(graph_t *G, int *edgelist, double *scores)
 {  
   
   // Get the number of processes

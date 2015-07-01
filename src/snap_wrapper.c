@@ -2,6 +2,8 @@
 #include <graph_gen.h>
 #include <graph_metrics.h>
 
+#include "bridging.h"
+
 #include <R.h>
 #include <Rinternals.h>
 
@@ -147,6 +149,27 @@ SEXP snap_betweenness_R(SEXP sE, SEXP sn, SEXP sm)
   double *BC = REAL(sBC);
   
   snap_betweenness(E, n, m, BC);
+  
+  UNPROTECT(1);
+ 
+  return sBC;
+}
+
+
+/* Rank is rank if this is an MPI call, 0 else */
+SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP srank) {
+  int n = INTEGER(sn)[0],
+    m = INTEGER(sm)[0],
+    rank = INTEGER(srank)[0];
+  
+  int *E = INTEGER(sE);
+  graph_t G;
+  int r = read_graph_from_edgelist(&G, E, n, m);
+  
+  SEXP sBC = PROTECT(allocVector(REALSXP, rank==0 ? n : 0));
+  double *BC = REAL(sBC);
+  
+  bridging(&G, E, BC);
   
   UNPROTECT(1);
  

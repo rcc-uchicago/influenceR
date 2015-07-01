@@ -9,7 +9,8 @@ Description: Compute various node significance measures on networks. This descri
 Depends: R (>= 3.1.2)
 License: somelicense
 LazyData: true
-Imports:
+Imports: 
     igraph (>= 0.7.1),
     Matrix (>= 1.1-4),
 NeedsCompilation: yes
+Suggests: testthat
