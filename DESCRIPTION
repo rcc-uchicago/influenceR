@@ -13,4 +13,4 @@ Imports:
     igraph (>= 0.7.1),
     Matrix (>= 1.1-4),
 NeedsCompilation: yes
-Suggests: testthat
+Suggests: testthat, ergm
