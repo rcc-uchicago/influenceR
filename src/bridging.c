@@ -1,4 +1,3 @@
-
 #include <mpi.h>
 #include <stdio.h>
 #include <R.h>
@@ -17,12 +16,53 @@ long BFS_parallel_frontier_expansion_bridging(graph_t* G, long src, long diamete
 double *bridging(graph_t *G, int *edgelist, double *scores)
 {  
   
+ 	int n = G->n; /* number of nodes */
+	int m = G->m; /* number of edges */
+
+  
+  long u, v, j, k;
+  
+	/* 1) compute closeness by edge in file */
+	
+  double *closeness_by_edge = (double *) R_alloc(m, sizeof(double));
+  
+  for (int i = 0; i < m/2; i++) {
+  
+    u = edgelist[i*2] - 1;
+    v = edgelist[i*2+1] - 1;
+        
+    /* Find edge numbers */
+    for (j=G->numEdges[u]; v != G->endV[j] && j<G->numEdges[u+1]; j++);
+    for (k=G->numEdges[v]; u != G->endV[k] && k<G->numEdges[v+1]; k++);
+    assert(j != G->numEdges[u+1]);
+    assert(k != G->numEdges[v+1]);
+    
+    /* Calculate closeness */
+    double c = closeness(G, j, k);
+    closeness_by_edge[j] = c;
+    closeness_by_edge[k] = c;
+  }
+
+  /* 2) Compute closeness by vertex */
+  
+	double cls = closeness(G, -1, -1); // normal closeness (use all edges)
+	for (v = 0; v < n; v++) 
+		scores[v] = bridging_vertex_precomp(G, v, cls, closeness_by_edge);
+  
+  return scores;
+}
+
+double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
+{  
+  
   // Get the number of processes
   int size, rank;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+#ifdef VERBOSE
   fprintf(stderr, "hello from main_brdiging, process %d\n", rank);
+#endif
   
  	int n = G->n; /* number of nodes */
 	int m = G->m; /* number of edges */
@@ -34,7 +74,9 @@ double *bridging(graph_t *G, int *edgelist, double *scores)
   int start = rank * delta, end = start + delta;
   end = end > m ? m : end;
   
+#ifdef VERBOSE
   fprintf(stderr, "%d range: %d-%d\n", rank, start, end); 
+#endif
   
   double *buf = (double *) R_alloc(bufsize, sizeof(double));
   int *edgeidx = (int *) R_alloc(bufsize, sizeof(int));
@@ -47,7 +89,6 @@ double *bridging(graph_t *G, int *edgelist, double *scores)
   
   
   for (int ii = start; ii < end; ii++) {
-    fprintf(stderr, "%d: iteration %d\n", rank, ii);
     u = edgelist[ii*2] - 1;
     v = edgelist[ii*2+1] - 1;
     
@@ -67,8 +108,9 @@ double *bridging(graph_t *G, int *edgelist, double *scores)
     //fprintf(stderr, "%d: CBE %d %d %g\n", rank, j, k, buf[i]);
   }
 
+#ifdef VERBOSE
   fprintf(stderr, "Rank %d done reading edges\n", rank);
-  
+#endif
   
 
   double *closeness_buf = NULL;
@@ -129,22 +171,22 @@ double *bridging(graph_t *G, int *edgelist, double *scores)
 }
 
 double bridging_vertex_precomp(graph_t *G, long v, double cls, double *closeness) {
-	
-    int n = G->n;
 
-    int degree = 0;
-	double sum = 0;
+  int n = G->n;
 
-    for (long j=G->numEdges[v]; j<G->numEdges[v+1]; j++) {
-      	double cls_ = closeness[j];
-	  	sum += cls - cls_;
-        degree++;
-    }
+  int degree = 0;
+  double sum = 0;
 
-	if (degree == 0)
-		return 0;
-	
-    return sum/((double) degree);
+  for (long j=G->numEdges[v]; j<G->numEdges[v+1]; j++) {
+    double cls_ = closeness[j];
+  	sum += cls - cls_;
+    degree++;
+  }
+
+  if (degree == 0)
+  return 0;
+
+  return sum/((double) degree);
 }
 
 

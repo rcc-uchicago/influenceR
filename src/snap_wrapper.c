@@ -157,10 +157,11 @@ SEXP snap_betweenness_R(SEXP sE, SEXP sn, SEXP sm)
 
 
 /* Rank is rank if this is an MPI call, 0 else */
-SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP srank) {
+SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP sMPI, SEXP srank) {
   int n = INTEGER(sn)[0],
     m = INTEGER(sm)[0],
-    rank = INTEGER(srank)[0];
+    rank = INTEGER(srank)[0],
+    mpi = INTEGER(sMPI)[0]; // use mpi?
   
   int *E = INTEGER(sE);
   graph_t G;
@@ -168,8 +169,12 @@ SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP srank) {
   
   SEXP sBC = PROTECT(allocVector(REALSXP, rank==0 ? n : 0));
   double *BC = REAL(sBC);
-  
-  bridging(&G, E, BC);
+
+  if (mpi != 0)
+    bridging_MPI(&G, E, BC);
+  else
+    bridging(&G, E, BC);
+
   
   UNPROTECT(1);
  

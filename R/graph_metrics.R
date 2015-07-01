@@ -14,21 +14,47 @@ eigencentrality <- function(g) {
 }
 
 # 1/2 the values of our betweenness code, which is because this is UNDIRECTED for real
-betweenness <- function(g, snap=F) {
+betweenness <- function(g, snap=T) {
   
-  snap_betweenness <- function(g) { # TODO: this doesn't work when defined at top level of package. why.
-    el <- get.edgelist(g)
-    n <- max(el)
-    m <- length(el)/2 # TODO: for directed too?
-    .Call("snap_betweenness_R", as.integer(el), as.integer(n), as.integer(m))
-  }
+  if (!snap)
+    return(igraph::betweenness(g, directed=F))
   
-  if (snap)
-    snap_betweenness(g)
-  else
-    igraph::betweenness(g, directed=F) 
+  el <- get.edgelist(g)
+  el_i <- as.integer(t(el))
+  n <- as.integer(max(el))
+  m <- as.integer(length(el)/2) # TODO: for directed too?
+  
+  .Call("snap_betweenness_R", el_i, n, m, PACKAGE="influenceR")
+  
 }
 
+
+bridging <- function(g, MPI=F, cluster=NULL) {
+  
+  el <- get.edgelist(g)
+  el_i <- as.integer(t(el))
+  n <- as.integer(max(el_i))
+  m <- as.integer(length(el_i)/2)
+  
+  if(!MPI) {
+    x <- .Call("snap_bridging_R", el_i, n, m, as.integer(FALSE), as.integer(0), PACKAGE="influenceR")
+    return(x)
+  }
+  
+  if ("package:Rmpi" %in% search()) {
+    x <- clusterCall(cl, function(...) {
+        
+        library(influenceR)
+        .Call("snap_bridging_R", ..., PACKAGE="influenceR")
+        
+    }, el_i, n, m, as.integer(TRUE), as.integer(0)) # ensure these values are exported.
+    
+    return(x[1])
+  }
+  else
+    print("Error! Load Rmpi and supply a cluster object.")
+    
+}
 
 
 ens <- function(g) {
