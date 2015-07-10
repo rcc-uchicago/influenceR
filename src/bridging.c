@@ -60,9 +60,9 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-#ifdef VERBOSE
+  //#ifdef VERBOSE
   fprintf(stderr, "hello from main_brdiging, process %d\n", rank);
-#endif
+  //#endif
   
  	int n = G->n; /* number of nodes */
 	int m = G->m; /* number of edges */
@@ -72,7 +72,7 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
 	
   int bufsize = ceil(((double)m) / size), delta = bufsize/2;
   int start = rank * delta, end = start + delta;
-  end = end > m ? m : end;
+  end = end > m/2 ? m/2 : end;
   
 #ifdef VERBOSE
   fprintf(stderr, "%d range: %d-%d\n", rank, start, end); 
@@ -124,7 +124,6 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
   MPI_Gather(buf, bufsize, MPI_DOUBLE, closeness_buf, bufsize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   MPI_Gather(edgeidx, bufsize, MPI_INT, edge_indices, bufsize, MPI_INT, 0, MPI_COMM_WORLD);
   
-  
   double *closeness_by_edge = (double *) R_alloc(m, sizeof(double));
   /* Fill REAL closeness_by_edge matrix */
     
@@ -160,9 +159,6 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
 	
   MPI_Gather(buf, delta, MPI_DOUBLE, scores, delta, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   
-
-  
-  fprintf(stderr, "Rank %d goodbye\n", rank);
   
   MPI_Barrier(MPI_COMM_WORLD);
   

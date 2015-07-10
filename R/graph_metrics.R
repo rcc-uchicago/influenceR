@@ -114,7 +114,7 @@ main <- function(args) {
   
   graph <- dimacs.to.graph(args[[2]])
   func <- args[[1]]
-  centrality <- c(eigen=eigencentrality, betweenness=betweenness, ens=ens, constraint=constraint)
+  centrality <- c(eigen=eigencentrality, betweenness=betweenness, ens=ens, constraint=constraint, bridging=bridging)
   
   x <- centrality[[func]](graph)
   

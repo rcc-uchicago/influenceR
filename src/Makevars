@@ -1,6 +1,7 @@
 SNAP = snap-0.4
-PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(SNAP)/include 
-PKG_LIBS = $(SHLIB_OPENMP_CFLAGS) $(SNAP)/lib/.libs/libsnap.a
+PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(SNAP)/include -DVERBOSE -std=c99
+PKG_LIBS_MPI     = -L/software/openmpi-1.8-el6-x86_64+intel-15.0/lib -lmpi  -lutil -lpthread
+PKG_LIBS = $(PKG_LIBS_MPI) $(SHLIB_OPENMP_CFLAGS) $(SNAP)/lib/.libs/libsnap.a
 
 .PHONY: all snap
 
