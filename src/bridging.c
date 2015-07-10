@@ -60,9 +60,9 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  //#ifdef VERBOSE
+  #ifdef VERBOSE
   fprintf(stderr, "hello from main_brdiging, process %d\n", rank);
-  //#endif
+  #endif
   
  	int n = G->n; /* number of nodes */
 	int m = G->m; /* number of edges */
