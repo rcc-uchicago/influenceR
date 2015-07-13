@@ -9,6 +9,13 @@ dimacs.to.graph <- function(fname) {
     graph.edgelist(el, directed=F)
 }
 
+# requires network to be loaded
+igraph.to.network <- function(g) {
+  el <- igraph::get.edgelist(g)
+  net <- network::as.network(el, directed=F) # directed?
+  net
+}
+
 eigencentrality <- function(g) {
   evcent(g, scale=F)$vector
 }
