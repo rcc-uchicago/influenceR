@@ -42,7 +42,7 @@ keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
 }
 
 
-bridging <- function(g, MPI=F, cluster=NULL) {
+bridging <- function(g, MPI=F) {
   
   el <- get.edgelist(g)
   el_i <- as.integer(t(el))
@@ -55,12 +55,18 @@ bridging <- function(g, MPI=F, cluster=NULL) {
   }
   
   if ("package:Rmpi" %in% search()) {
-    x <- clusterCall(cl, function(...) {
+    np <-  mpi.universe.size() - 1
+    cl <- makeMPIcluster(np)
+    
+    x <- clusterApply(cl, 1:np, function(rank, el_i, n, m) {
         
         library(influenceR)
-        .Call("snap_bridging_R", ..., PACKAGE="influenceR")
+        .Call("snap_bridging_R", el_i, n, m, as.integer(TRUE), as.integer(rank), PACKAGE="influenceR")
         
-    }, el_i, n, m, as.integer(TRUE), as.integer(0)) # ensure these values are exported.
+    }, el_i, n, m) # ensure these values are exported.
+    
+    stopCluster(cl)
+    mpi.exit()
     
     return(x[1])
   }
@@ -68,6 +74,7 @@ bridging <- function(g, MPI=F, cluster=NULL) {
     print("Error! Load Rmpi and supply a cluster object.")
     
 }
+
 
 
 ens <- function(g) {

@@ -199,6 +199,13 @@ SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP sMPI, SEXP srank) {
   int r = read_graph_from_edgelist(&G, E, n, m);
   
   SEXP sBC = PROTECT(allocVector(REALSXP, rank==0 ? n : 0));
+  if (rank == 0) {
+    //sBC = PROTECT(allocVector(REALSXP, n));
+    printf("Rank %d: allocated memory\n", rank);
+  }
+  else {
+    printf("Rank %d: Did not allocate memory\n", rank);
+  }
   double *BC = REAL(sBC);
 
   if (mpi != 0)
