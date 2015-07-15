@@ -15,8 +15,9 @@ double * process_sparse(int *I, int *J, double *X, double *Ai,  double *deg, int
 
   for(int p = 0; p < n; p++) {
     int j = J[p];
-    out[p] = X[p] * Ai[j] * deg[j];
-    out[p] = (out[p] == 0 ? 0 : 1/out[p]);
+    int i = I[p];
+    out[p] = X[p] * Ai[j] * Ai[i] * deg[j];
+    //out[p] = (out[p] == 0 ? 0 : 1/out[p]);
   }
 
   return out;
