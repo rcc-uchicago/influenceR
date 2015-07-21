@@ -12,7 +12,7 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
 
     long i;
     long count, offset;
-    int int_wt, *int_weight;
+    int int_wt=1, *int_weight; // maybe some graphs have weights.
     long u, v;
     attr_id_t *src;
     attr_id_t *dest;
@@ -127,7 +127,6 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
 
 int snap_betweenness(int *E, long n, long m, double *BC) {
   graph_t G;
-  printf("nodes: %d, edges: %d\n", n,m);
   int r = read_graph_from_edgelist(&G, E, n, m);
   if (r) {
     printf("Error code!");

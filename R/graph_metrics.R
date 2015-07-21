@@ -24,7 +24,7 @@ eigencentrality <- function(g) {
 betweenness <- function(g, snap=T) {
   
   if (!snap)
-    return(igraph::betweenness(g, directed=F))
+    return(igraph::betweenness(g))
   
   el <- get.edgelist(g)
   el_i <- as.integer(t(el))
@@ -82,8 +82,7 @@ bridging <- function(g, MPI=F) {
     
 }
 
-
-
+# If a vertex has no neighbors, make it's ENS 0
 ens <- function(g) {
   A <- get.adjacency(g)   # This will be sparse, which is great.
   S <- crossprod(A)       # S[i,j] = # of shared neighbors between i,j
@@ -91,6 +90,8 @@ ens <- function(g) {
   qsum <- rowSums(Q)
   deg <- rowSums(A)
   ens <- deg - (qsum/deg)
+  ens[is.nan(ens)] <- 0
+  ens
 }
 
 constraint <- function(g) {
