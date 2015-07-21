@@ -11,5 +11,5 @@ all: $(SHLIB)
 $(SHLIB): snap
 
 snap:
-	(cd snap-0.4; ./configure --enable-openmp ; make)
+	(cd snap-0.4; ./configure --enable-openmp CC="$(CC)"; make)
 
