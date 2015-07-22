@@ -60,8 +60,10 @@ bridging <- function(g, MPI=F) {
     x <- .Call("snap_bridging_R", el_i, n, m, as.integer(FALSE), as.integer(0), PACKAGE="influenceR")
     return(x)
   }
+  if("x" == "@HAVE_MPI@x")
+      stop("MPI requested but not available. Recompile with the --with-mpi option.")
   
-  if ("package:Rmpi" %in% search()) {
+  if ("package:snow" %in% search()) {
     np <-  mpi.universe.size() - 1
     cl <- makeMPIcluster(np)
     
@@ -78,7 +80,7 @@ bridging <- function(g, MPI=F) {
     return(x[1])
   }
   else
-    print("Error! Load Rmpi and supply a cluster object.")
+    stop("MPI is not available. Load Rmpi and snow and supply a cluster object.")
     
 }
 

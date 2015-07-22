@@ -1,4 +1,3 @@
-#include <mpi.h>
 #include <stdio.h>
 #include <R.h>
 #include <Rinternals.h>
@@ -6,6 +5,9 @@
 #include <graph_defs.h>
 #include <graph_gen.h>
 
+#ifdef USE_MPI
+#include <mpi.h>
+#endif
 
 double bridging_vertex_precomp(graph_t *G, long v, double cls, double *closeness);
 double *main_bridging(graph_t *G, int *edgelist, double *scores);
@@ -52,6 +54,7 @@ double *bridging(graph_t *G, int *edgelist, double *scores)
   return scores;
 }
 
+#ifdef USE_MPI
 double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
 {  
   
@@ -165,6 +168,8 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
   
   return scores;
 }
+
+#endif
 
 double bridging_vertex_precomp(graph_t *G, long v, double cls, double *closeness) {
 
@@ -433,6 +438,5 @@ OMP("omp barrier")
 #endif
     return count;
 }
-
 
 

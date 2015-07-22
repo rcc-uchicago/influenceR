@@ -1,0 +1,25 @@
+SNAP = snap-0.4
+PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(SNAP)/include -std=c99
+
+HAVE_MPI = @HAVE_MPI@
+
+ifeq ($(HAVE_MPI),1)
+  PKG_LIBS_MPI =  -lmpi  -lutil -lpthread
+  PKG_CFLAGS += -DUSE_MPI
+endif
+
+SNAP_LIBS = "$(LIBS)"
+ifeq ($(firstword $(CC)),icc)
+  SNAP_LIBS = "$(LIBS) -lrt"
+endif
+
+PKG_LIBS = $(PKG_LIBS_MPI) $(SHLIB_OPENMP_CFLAGS) $(SNAP)/lib/.libs/libsnap.a
+
+.PHONY: all snap
+
+all: $(SHLIB)
+$(SHLIB): snap
+
+snap:
+	(cd snap-0.4; ./configure --enable-openmp CC="$(CC)" LIBS=$(SNAP_LIBS) ; make)
+

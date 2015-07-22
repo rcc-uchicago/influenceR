@@ -207,11 +207,14 @@ SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP sMPI, SEXP srank) {
   }
   double *BC = REAL(sBC);
 
+#ifdef USE_MPI
   if (mpi != 0)
     bridging_MPI(&G, E, BC);
   else
     bridging(&G, E, BC);
-
+#else
+  bridging(&G, E, BC);
+#endif
   
   UNPROTECT(1);
  
