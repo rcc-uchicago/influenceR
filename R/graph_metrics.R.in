@@ -2,6 +2,25 @@
 # evcent - eigenvector centrality
 # betweenness - vertex betweenness
 
+#' Convert a DIMACS file to an igraph graph object.
+#'
+#' DIMACS is a very simple ASCII format for graphs. The first line is of the
+#' form:
+#'
+#' p sp <n> <m>
+#'
+#' where <n> is the number of nodes in the graph and <m> is the number of edges. 
+#' Each subsequent line represents an edge, and is of the form:
+#'
+#' e <u> <v> <weight>
+#'
+#' where <u> and <v> are vertex IDs in the range 1-n, and weight is the weight
+#' of the edge (or 1 if edges are unweighted).
+#'
+#' @param fname A filename
+#' @return An igraph graph object built from the filename.
+#' @examples
+#' dimacs.to.graph("mygraph.dim")
 dimacs.to.graph <- function(fname) {
     x <- read.table(fname, skip=1)
     el <- as.matrix(x[2:3])
@@ -9,20 +28,49 @@ dimacs.to.graph <- function(fname) {
     graph.edgelist(el, directed=F)
 }
 
-# requires network to be loaded
+#' Convert an igraph graph object to a network object (from the "network" 
+#' package).
+#'
+#' @param g An igraph object
+#' @return A network object 
 igraph.to.network <- function(g) {
   el <- igraph::get.edgelist(g)
   net <- network::as.network(el, directed=F) # directed?
   net
 }
 
+#' Convert an ergm network object to an igraph object.
+#'
+#' @param net A network object
+#' @return An igraph object
+ergm.to.igraph = function(net) {
+  edges <- ergm::as.edgelist(net) 
+  igraph::make_graph(t(edges)) 
+}
+
+#' Compute the eigencentrality values.
+#'
+#' Eigencentrality is a measure of the influence of a node in a network based
+#' on the eigendecompositon of the adjacency matrix. This is a thin wrapper
+#' around the evcent function in the igraph package.
+#'
+#' @param g The igraph object to analyze
+#' @return A numeric vector with the eigencentrality score for each vertex
 eigencentrality <- function(g) {
   evcent(g, scale=F)$vector
 }
 
-# 1/2 the values of our betweenness code, which is because this is UNDIRECTED for real
+
+#' Compute the betweenness values.
+#'
+#' @param g The igraph object to analyze
+#' @param snap True to use the SNAP betweenness code, False to use igraph::betweenness
+#' @return A numeric vector with the betweenness centrality score for each vertex
 betweenness <- function(g, snap=T) {
   
+# 1/2 the values of our betweenness code, which is because this is UNDIRECTED for real
+
+
   if (!snap)
     return(igraph::betweenness(g))
   
@@ -34,9 +82,14 @@ betweenness <- function(g, snap=T) {
   .Call("snap_betweenness_R", el_i, n, m, PACKAGE="influenceR")
 }
 
-# g : graph, k : size of set, prob : probability we will accept a lower state,
-# tol : acceptance tolerance, maxsec : total computation budget,
-# roundsec : seconds for a round (in parallel version)
+#' Compute a KPP-Neg set for a given graph.
+#'
+#' @param g The igraph object to analyze.
+#' @param k The size of the KP-set
+#' @param prob probability of accepting a state with a lower value
+#' @param tol tolerance within which to stop the optimization and accept the current value
+#' @param maxsec The total computation budget for the optimization, in seconds
+#' @param roundsec Number of seconds in between synchronizing workers' answer
 keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
   el <- get.edgelist(g)
   el_i <- as.integer(t(el))
@@ -48,7 +101,11 @@ keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
   which(s>0)
 }
 
-
+#' Compute bridging scores for a given graph.
+#'
+#' @param g The igraph object to analyze.
+#' @param MPI True to use MPI
+#' @return A numeric vector with the bridging score for each vertex
 bridging <- function(g, MPI=F) {
   
   el <- get.edgelist(g)
@@ -84,7 +141,10 @@ bridging <- function(g, MPI=F) {
     
 }
 
-# If a vertex has no neighbors, make it's ENS 0
+#' Compute Burt's effective network size for a graph.
+#'
+#' @param g The igraph object to analyze.
+#' @return A numeric vector with the effective network size for each vertex
 ens <- function(g) {
   A <- get.adjacency(g)   # This will be sparse, which is great.
   S <- crossprod(A)       # S[i,j] = # of shared neighbors between i,j
@@ -92,11 +152,16 @@ ens <- function(g) {
   qsum <- rowSums(Q)
   deg <- rowSums(A)
   ens <- deg - (qsum/deg)
-  ens[is.nan(ens)] <- 0
+  ens[is.nan(ens)] <- 0 # If a vertex has no neighbors, make its ENS 0
   ens
 }
 
-constraint <- function(g) {
+#' Compute Burt's graph constraint for a graph.
+#'
+#' @param g The igraph object to analyze.
+#' @param v vertices over which to compute constraint (default to all)
+#' @return A numeric vector with the constraint score for each vertex in v
+constraint <- function(g, v=V(g)) {
   
   process_sparse <- function(A, Ai, deg) {
     M <- as(A, 'TsparseMatrix')
@@ -126,7 +191,7 @@ constraint <- function(g) {
     sum(Sj2)
   }
   
-  sapply(1:n, constraint_i)
+  sapply(v, constraint_i)
 }
 
 
