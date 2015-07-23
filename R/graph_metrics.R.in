@@ -63,6 +63,14 @@ eigencentrality <- function(g) {
 
 #' Compute the betweenness values.
 #'
+#' The betweenness centrality score of a node u is the sum over all pairs s,t of the
+#' proportion of shortest paths between s and t that pass through u. This 
+#' function allows the use of either the SNAP betweenness implementation (default), or 
+#' the igraph betweenness function. The SNAP version makes use of OpenMP for 
+#' parallelization, and may be faster in some circumstances.
+#'
+#' @seealso \url{http://snap-graph.sourceforge.net/}
+#'
 #' @param g The igraph object to analyze
 #' @param snap True to use the SNAP betweenness code, False to use igraph::betweenness
 #' @return A numeric vector with the betweenness centrality score for each vertex
@@ -82,7 +90,21 @@ betweenness <- function(g, snap=T) {
   .Call("snap_betweenness_R", el_i, n, m, PACKAGE="influenceR")
 }
 
+
 #' Compute a KPP-Neg set for a given graph.
+#'
+#' The "Key Player" family of node importance algorithms (Borgatti 2006) involves the selection
+#' of a metric of node importance and a combinatorial optimization strategy to
+#' choose the set S of vertices of size k that maximize that metric. This
+#' algorithm uses the KPP-Neg metric, whereby we sum over all vertices not in S the reciprocal
+#' of the shortest distance to a vertex in S. For combinatorial optimization, we use
+#' stochastic gradient descent, where in each optimization round, we select a node u in S
+#' and v not in S at random, switch them, and accept the switch if evaluation of the
+#' metric improves. This implementation uses OpenMP so multiple workers can explore the
+#' solution space in parallel, synchronizing to pick the best answer after a given computation
+#' budget has elapsed.
+#'
+#' @seealso \url{http://www.bebr.ufl.edu/sites/default/files/Borgatti%20-%202006%20-%20Identifying%20sets%20of%20key%20players%20in%20a%20social%20networ.pdf}
 #'
 #' @param g The igraph object to analyze.
 #' @param k The size of the KP-set
@@ -90,6 +112,7 @@ betweenness <- function(g, snap=T) {
 #' @param tol tolerance within which to stop the optimization and accept the current value
 #' @param maxsec The total computation budget for the optimization, in seconds
 #' @param roundsec Number of seconds in between synchronizing workers' answer
+#' @return a vector with the vertex number of each vertex in the selected set S.
 keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
   el <- get.edgelist(g)
   el_i <- as.integer(t(el))
@@ -103,9 +126,33 @@ keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
 
 #' Compute bridging scores for a given graph.
 #'
+#' A node's bridging score is the average decrease in cohesiveness if each of
+#' its edges were removed from the graph.
+#' 
+#' @seealso \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
+#'
 #' @param g The igraph object to analyze.
-#' @param MPI True to use MPI
+#' @param MPI True to use MPI 
 #' @return A numeric vector with the bridging score for each vertex
+#'
+#' This function can use MPI in order to parellelize the bridging computation
+#' across vertices. If you would like to use MPI:
+#' \itemize{
+#' \item{}{An MPI implementation, such as OpenMPI, must be installed on your system}
+#' \item{}{R must be compiled with the --with-mpi option}
+#' \item{}{the Rmpi and snow packages must be installed and loaded prior to the bridging invocation}
+#' \item{}{start R with the "mpirun -n 1" wrapper}
+#' \item{}{set MPI=True in the arguments to bridging}
+#' }
+#' 
+#' @examples
+#' \dontrun{
+#' library(Rmpi)
+#' library(snow)
+#' library(influenceR)
+#' g <- dimacs.to.graph("mygraph.dim")
+#' bridging(g, MPI=T)
+#' }
 bridging <- function(g, MPI=F) {
   
   el <- get.edgelist(g)
