@@ -200,7 +200,11 @@ SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP sMPI, SEXP srank) {
   SEXP sBC = PROTECT(allocVector(REALSXP, rank==0 ? n : 0));
   if (rank == 0) {
     //sBC = PROTECT(allocVector(REALSXP, n));
-    printf("Rank %d: allocated memory\n", rank);
+    printf("Rank %d: allocated memory for %d doubles\n", rank, n);
+    if (REAL(sBC) == NULL) {
+        printf("Rank %d: error!\n", rank);
+        exit(1);
+    }
   }
   else {
     printf("Rank %d: Did not allocate memory\n", rank);

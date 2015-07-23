@@ -6,14 +6,10 @@
 #'
 #' DIMACS is a very simple ASCII format for graphs. The first line is of the
 #' form:
-#'
-#' p sp <n> <m>
-#'
+#' p sp <n> <m> \br
 #' where <n> is the number of nodes in the graph and <m> is the number of edges. 
 #' Each subsequent line represents an edge, and is of the form:
-#'
-#' e <u> <v> <weight>
-#'
+#' e <u> <v> <weight> \br
 #' where <u> and <v> are vertex IDs in the range 1-n, and weight is the weight
 #' of the edge (or 1 if edges are unweighted).
 #'
@@ -171,7 +167,7 @@ bridging <- function(g, MPI=F) {
     np <-  mpi.universe.size() - 1
     cl <- makeMPIcluster(np)
     
-    x <- clusterApply(cl, 1:np, function(rank, el_i, n, m) {
+    x <- clusterApply(cl, 0:(np-1), function(rank, el_i, n, m) {
         
         library(influenceR)
         .Call("snap_bridging_R", el_i, n, m, as.integer(TRUE), as.integer(rank), PACKAGE="influenceR")

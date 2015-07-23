@@ -12,11 +12,10 @@ dimacs.to.graph(fname)
 \value{
 An igraph graph object built from the filename.
 }
-\description{
+\details{
 DIMACS is a very simple ASCII format for graphs. The first line is of the
 form:
-}
-\details{
+
 p sp <n> <m>
 
 where <n> is the number of nodes in the graph and <m> is the number of edges.

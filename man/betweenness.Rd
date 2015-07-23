@@ -15,6 +15,13 @@ betweenness(g, snap = T)
 A numeric vector with the betweenness centrality score for each vertex
 }
 \description{
-Compute the betweenness values.
+The betweenness centrality score of a node u is the sum over all pairs s,t of the
+proportion of shortest paths between s and t that pass through u. This
+function allows the use of either the SNAP betweenness implementation (default), or
+the igraph betweenness function. The SNAP version makes use of OpenMP for
+parallelization, and may be faster in some circumstances.
+}
+\seealso{
+\url{http://snap-graph.sourceforge.net/}
 }
 
