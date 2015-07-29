@@ -248,3 +248,37 @@ main <- function(args) {
   
   write.table(x, quote=F, row.names=F, col.names=F)
 }
+
+library(sna)
+network.to.dimacs = function(g, fname) {
+    net <- as.edgelist.sna(g)
+    n <- attr(net, "n")
+    m <- nrow(net)
+
+    row.names(net) <- rep("e", m)
+
+    # header
+    write(paste("p sp", n, m), file=fname)
+
+    # body
+    write.table(net, col.names=F, quote=F, file=fname, append=T)
+}
+    
+#' Convert a network object to a dimacs object.
+#'
+#' @param net A network object
+#' @return A dimacs object
+library(sna)
+network.to.dimacs = function(g, fname) {
+    net <- as.edgelist.sna(g)
+    n <- attr(net, "n")
+    m <- nrow(net)
+
+    row.names(net) <- rep("e", m)
+
+    # header
+    write(paste("p sp", n, m), file=fname)
+
+    # body
+    write.table(net, col.names=F, quote=F, file=fname, append=T)
+}
