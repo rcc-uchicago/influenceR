@@ -16,8 +16,8 @@
 #' @param fname A filename
 #' @return An igraph graph object built from the filename.
 #' @examples
-#' dimacs.to.graph("mygraph.dim")
-dimacs.to.graph <- function(fname) {
+#' dimacs.to.igraph("mygraph.dim")
+dimacs.to.igraph <- function(fname) {
     x <- read.table(fname, skip=1)
     el <- as.matrix(x[2:3])
     
@@ -272,11 +272,10 @@ network.to.dimacs = function(g, fname) {
 #'
 #' @param net A graph object
 #' @return A dimacs object
-
 igraph.to.dimacs = function(g, fname) {
     net <- igraph::as_edgelist(g)
-    n <- attr(net, "n")
-    m <- nrow(net)
+    n <- igraph::vcount(g)
+    m <- igraph::ecount(g)
 
     row.names(net) <- rep("e", m)
 
