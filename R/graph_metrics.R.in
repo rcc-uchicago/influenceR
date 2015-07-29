@@ -288,7 +288,7 @@ network.to.dimacs = function(g, fname) {
 #' @param net A graph object
 #' @return A dimacs object
 
-network.to.dimacs = function(g, fname) {
+igraph.to.dimacs = function(g, fname) {
     net <- igraph::as_edgelist(g)
     n <- attr(net, "n")
     m <- nrow(net)
