@@ -24,6 +24,22 @@ dimacs.to.igraph <- function(fname) {
     graph.edgelist(el, directed=F)
 }
 
+#' Convert an igraph object to a DIMACS file.
+#' @param g An igraph object
+#' @param fname A file name to write to
+igraph.to.dimacs <- function(g, fname) {
+    edge.list <- get.edgelist(g, names=F)  
+    n <- vcount(g)
+    m <- ecount(g)
+    row.names(net) <- rep("e", m)
+
+    # header
+    write(paste("p sp", n, m), file=fname)
+
+    # body
+    write.table(edge.list, col.names=F, quote=F, file=fname, append=T)
+}
+
 #' Convert an igraph graph object to a network object (from the "network" 
 #' package).
 #'
