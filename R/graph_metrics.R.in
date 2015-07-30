@@ -31,7 +31,7 @@ igraph.to.dimacs <- function(g, fname) {
     edge.list <- get.edgelist(g, names=F)  
     n <- vcount(g)
     m <- ecount(g)
-    row.names(net) <- rep("e", m)
+    row.names(edge.list) <- rep("e", m)
 
     # header
     write(paste("p sp", n, m), file=fname)
