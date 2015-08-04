@@ -94,7 +94,7 @@ betweenness <- function(g, snap=T) {
   if (!snap)
     return(igraph::betweenness(g))
   
-  el <- get.edgelist(g)
+  el <- get.edgelist(g, names=F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el))
   m <- as.integer(length(el)/2) # TODO: for directed too?
@@ -126,7 +126,7 @@ betweenness <- function(g, snap=T) {
 #' @param roundsec Number of seconds in between synchronizing workers' answer
 #' @return a vector with the vertex number of each vertex in the selected set S.
 keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
-  el <- get.edgelist(g)
+  el <- get.edgelist(g, names=F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el))
   m <- as.integer(length(el)/2)
@@ -167,7 +167,7 @@ keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
 #' }
 bridging <- function(g, MPI=F) {
   
-  el <- get.edgelist(g)
+  el <- get.edgelist(g, names=F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el_i))
   m <- as.integer(length(el_i)/2)
