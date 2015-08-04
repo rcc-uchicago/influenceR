@@ -24,6 +24,22 @@ dimacs.to.igraph <- function(fname) {
     graph.edgelist(el, directed=F)
 }
 
+#' Convert a CSV file to an igraph graph object.
+#'
+#' The first column should be sources, the second should be targets.
+#'
+#' @param fname A filename
+#' @return An igraph graph object built from the filename.
+#' @examples
+#' csv.to.igraph("mygraph.csv")
+csv.to.igraph <- function(fname) {
+    x <- read.csv(fname)
+    el <- as.matrix(x[1:2])
+    
+    graph.edgelist(el, directed=F)
+}
+
+
 #' Convert an igraph object to a DIMACS file.
 #' @param g An igraph object
 #' @param fname A file name to write to
@@ -34,7 +50,7 @@ igraph.to.dimacs <- function(g, fname) {
     row.names(edge.list) <- rep("e", m)
 
     # header
-    write(paste("p sp", n, m), file=fname)
+    write(paste("p sp", n, m), file=fname),
 
     # body
     write.table(edge.list, col.names=F, quote=F, file=fname, append=T)
@@ -99,7 +115,9 @@ betweenness <- function(g, snap=T) {
   n <- as.integer(max(el))
   m <- as.integer(length(el)/2) # TODO: for directed too?
   
-  .Call("snap_betweenness_R", el_i, n, m, PACKAGE="influenceR")
+  vals <- .Call("snap_betweenness_R", el_i, n, m, PACKAGE="influenceR")
+  names(vals) <- V(g)$name
+  vals
 }
 
 
@@ -133,7 +151,7 @@ keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
 
   s <- .Call("snap_keyplayer_R", el_i, n, m, as.integer(k), prob, tol, as.integer(maxsec), as.integer(roundsec), PACKAGE="influenceR")
   
-  which(s>0)
+  V(g)[which(s>0)]
 }
 
 #' Compute bridging scores for a given graph.
@@ -174,6 +192,7 @@ bridging <- function(g, MPI=F) {
   
   if(!MPI) {
     x <- .Call("snap_bridging_R", el_i, n, m, as.integer(FALSE), as.integer(0), PACKAGE="influenceR")
+    names(x) <- V(g)$name
     return(x)
   }
   if("x" == "@HAVE_MPI@x")
@@ -193,7 +212,9 @@ bridging <- function(g, MPI=F) {
     stopCluster(cl)
     mpi.exit()
     
-    return(x[1])
+    v = x[1]
+    names(v) <- V(g)$name 
+    return(v)
   }
   else
     stop("MPI is not available. Load Rmpi and snow and supply a cluster object.")
@@ -212,6 +233,7 @@ ens <- function(g) {
   deg <- rowSums(A)
   ens <- deg - (qsum/deg)
   ens[is.nan(ens)] <- 0 # If a vertex has no neighbors, make its ENS 0
+  names(ens) <- V(g)$name
   ens
 }
 
@@ -250,7 +272,9 @@ constraint <- function(g, v=V(g)) {
     sum(Sj2)
   }
   
-  sapply(v, constraint_i)
+  vals <- sapply(v, constraint_i)
+  names(vals) <- v$name
+  vals
 }
 
 
