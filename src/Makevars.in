@@ -8,13 +8,8 @@ ifeq ($(HAVE_MPI),1)
   PKG_CFLAGS += -DUSE_MPI
 endif
 
-ifeq ($(firstword $(CC)),icc)
-  SNAP_LIBS = "-lrt"
-endif
-
-ifneq (,$(SHLIB_OPENMP_CFLAGS))
-  SNAP_OPENMP="--enable-openmp"
-endif
+SNAP_OPENMP = $(and $(SHLIB_OPENMP_CFLAGS),--enable-openmp)
+SNAP_LIBS = $(if $(filter icc,$(CC)),-lrt)
 
 PKG_LIBS = $(PKG_LIBS_MPI) $(SHLIB_OPENMP_CFLAGS) $(SNAP)/lib/.libs/libsnap.a
 
