@@ -54,7 +54,9 @@ void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxse
 */
 void keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long maxsec, long sec, int *KP)
 {
-	
+#ifndef OPENMP
+ keyplayer_driver(g, n, k, p, tol, maxsec, KP);
+#else
   int np, rank, new_rank = 0, stop;
 
   double *fits;
@@ -148,4 +150,5 @@ void keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long m
   int *s = &allsets[0]; // s set for rank 0, which contains the best (as do all &allsets[i*n])
   for (int i = 0; i < n; i++)
     KP[i] = s[i];
+#endif
 }
