@@ -50,7 +50,7 @@ igraph.to.dimacs <- function(g, fname) {
     row.names(edge.list) <- rep("e", m)
 
     # header
-    write(paste("p sp", n, m), file=fname),
+    write(paste("p sp", n, m), file=fname)
 
     # body
     write.table(edge.list, col.names=F, quote=F, file=fname, append=T)
