@@ -29,7 +29,7 @@
 #define OMP(x)
 #define atomic_val_compare_and_swap(out, a, v1, v2)	\
   do { if (*(a) == (v1)) *(a) = (v2); (out) = *(a); } while (0)
-#define atomic_fetch_and_add(a, incr) do { *(a) += (incr); } while (0)
+#define atomic_fetch_and_add(a, incr) (*(a) += (incr))
 #endif
 
 #define INFTY (1<<30)

@@ -27,11 +27,23 @@ toc (void)
 #define CLK CLOCK_PROCESS_CPUTIME_ID
 #elif defined(CLOCK_REALTIME)
 #define CLK CLOCK_REALTIME
+#elif defined(__MACH__)
+//See: https://ininjas.com/pro/pages/view/284/clock-gettime-in-ios-and-macosx
+//clock_gettime is not implemented on OSX.
+#define CLK 0
+int clock_gettime(int clk_id, struct timespec* t) {
+    struct timeval now;
+    int rv = gettimeofday(&now, NULL);
+    if (rv) return rv;
+    t->tv_sec  = now.tv_sec;
+    t->tv_nsec = now.tv_usec * 1000;
+    return 0;
+}
 #else
 #error "Ugh. no clock."
 #endif
 static double t0;
-double snap_runtime;
+extern double snap_runtime;
 static double
 ts2d (const struct timespec ts)
 {
