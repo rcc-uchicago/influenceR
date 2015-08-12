@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_metrics.R
 \name{betweenness}
 \alias{betweenness}
-\title{Compute the betweenness values.}
+\title{Vertex betweenness centrality measure.}
 \usage{
 betweenness(g, snap = T)
 }

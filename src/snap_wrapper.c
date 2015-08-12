@@ -39,7 +39,7 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
       v = EL[2*i+1];
       
       if ((u <= 0) || (u > n) || (v <= 0) || (v > n)) {
-          fprintf(stderr, "Error reading edge # %d (%d, %d) in the input file."
+          fprintf(stderr, "Error reading edge # %ld (%ld, %ld) in the input file."
                   " Please check the input graph file.\n", count+1, u, v);
           return 1;
       }

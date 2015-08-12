@@ -30,8 +30,11 @@ algorithm uses the KPP-Neg metric, whereby we sum over all vertices not in S the
 of the shortest distance to a vertex in S. For combinatorial optimization, we use
 stochastic gradient descent, where in each optimization round, we select a node u in S
 and v not in S at random, switch them, and accept the switch if evaluation of the
-metric improves. This implementation uses OpenMP so multiple workers can explore the
-solution space in parallel, synchronizing to pick the best answer after a given computation
-budget has elapsed.
+metric improves. This implementation uses OpenMP (if available on the host sytem) so that
+multiple workers can explore the solution space in parallel, synchronizing to pick the best
+answer after a given computation budget has elapsed.
+}
+\seealso{
+\url{http://www.bebr.ufl.edu/sites/default/files/Borgatti\%20-\%202006\%20-\%20Identifying\%20sets\%20of\%20key\%20players\%20in\%20a\%20social\%20networ.pdf}
 }
 

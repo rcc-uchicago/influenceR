@@ -1,82 +1,21 @@
-# igraph package has arpack functions
-# evcent - eigenvector centrality
-# betweenness - vertex betweenness
-
-#' Convert a DIMACS file to an igraph graph object.
-#'
-#' DIMACS is a very simple ASCII format for graphs. The first line is of the
-#' form:
-#' p sp <n> <m> \br
-#' where <n> is the number of nodes in the graph and <m> is the number of edges. 
-#' Each subsequent line represents an edge, and is of the form:
-#' e <u> <v> <weight> \br
-#' where <u> and <v> are vertex IDs in the range 1-n, and weight is the weight
-#' of the edge (or 1 if edges are unweighted).
-#'
-#' @param fname A filename
-#' @return An igraph graph object built from the filename.
-#' @examples
-#' dimacs.to.igraph("mygraph.dim")
-dimacs.to.igraph <- function(fname) {
-    x <- read.table(fname, skip=1)
-    el <- as.matrix(x[2:3])
-    
-    graph.edgelist(el, directed=F)
-}
-
-#' Convert a CSV file to an igraph graph object.
-#'
-#' The first column should be sources, the second should be targets.
-#'
-#' @param fname A filename
-#' @return An igraph graph object built from the filename.
-#' @examples
-#' csv.to.igraph("mygraph.csv")
+# Convert a CSV file to an igraph graph object. This is NOT exported.
+#
+# The first column should be sources, the second should be targets.
+#
+# @param fname A filename
+# @return An igraph graph object built from the filename.
+# @examples
+# csv.to.igraph("mygraph.csv")
 csv.to.igraph <- function(fname) {
-    x <- read.csv(fname)
-    el <- as.matrix(x[1:2])
+    x <- read.csv(fname) # this may be dangerous because of users' settings.
+                         # See: http://r-pkgs.had.co.nz/r.html
+		x.char <- as.character(x)
+    el <- as.matrix(x.char[1:2])
     
-    graph.edgelist(el, directed=F)
+    igraph::graph.edgelist(el, directed=F)
 }
 
-
-#' Convert an igraph object to a DIMACS file.
-#' @param g An igraph object
-#' @param fname A file name to write to
-igraph.to.dimacs <- function(g, fname) {
-    edge.list <- get.edgelist(g, names=F)  
-    n <- vcount(g)
-    m <- ecount(g)
-    row.names(edge.list) <- rep("e", m)
-
-    # header
-    write(paste("p sp", n, m), file=fname)
-
-    # body
-    write.table(edge.list, col.names=F, quote=F, file=fname, append=T)
-}
-
-#' Convert an igraph graph object to a network object (from the "network" 
-#' package).
-#'
-#' @param g An igraph object
-#' @return A network object 
-igraph.to.network <- function(g) {
-  el <- igraph::get.edgelist(g)
-  net <- network::as.network(el, directed=F) # directed?
-  net
-}
-
-#' Convert an ergm network object to an igraph object.
-#'
-#' @param net A network object
-#' @return An igraph object
-ergm.to.igraph = function(net) {
-  edges <- ergm::as.edgelist(net) 
-  igraph::make_graph(t(edges)) 
-}
-
-#' Compute the eigencentrality values.
+#' Eigencentrality centrality measure.
 #'
 #' Eigencentrality is a measure of the influence of a node in a network based
 #' on the eigendecompositon of the adjacency matrix. This is a thin wrapper
@@ -84,12 +23,13 @@ ergm.to.igraph = function(net) {
 #'
 #' @param g The igraph object to analyze
 #' @return A numeric vector with the eigencentrality score for each vertex
+#'
+#' @export
 eigencentrality <- function(g) {
-  evcent(g, scale=F)$vector
+  igraph::evcent(g, scale=F)$vector
 }
 
-
-#' Compute the betweenness values.
+#' Vertex betweenness centrality measure.
 #'
 #' The betweenness centrality score of a node u is the sum over all pairs s,t of the
 #' proportion of shortest paths between s and t that pass through u. This 
@@ -102,24 +42,23 @@ eigencentrality <- function(g) {
 #' @param g The igraph object to analyze
 #' @param snap True to use the SNAP betweenness code, False to use igraph::betweenness
 #' @return A numeric vector with the betweenness centrality score for each vertex
+#'
+#' @export
 betweenness <- function(g, snap=T) {
   
 # 1/2 the values of our betweenness code, which is because this is UNDIRECTED for real
-
-
   if (!snap)
     return(igraph::betweenness(g))
   
-  el <- get.edgelist(g, names=F)
+  el <- igraph::get.edgelist(g, names=F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el))
   m <- as.integer(length(el)/2) # TODO: for directed too?
   
   vals <- .Call("snap_betweenness_R", el_i, n, m, PACKAGE="influenceR")
-  names(vals) <- V(g)$name
+  names(vals) <- igraph::V(g)$name
   vals
 }
-
 
 #' Compute a KPP-Neg set for a given graph.
 #'
@@ -130,11 +69,11 @@ betweenness <- function(g, snap=T) {
 #' of the shortest distance to a vertex in S. For combinatorial optimization, we use
 #' stochastic gradient descent, where in each optimization round, we select a node u in S
 #' and v not in S at random, switch them, and accept the switch if evaluation of the
-#' metric improves. This implementation uses OpenMP so multiple workers can explore the
-#' solution space in parallel, synchronizing to pick the best answer after a given computation
-#' budget has elapsed.
+#' metric improves. This implementation uses OpenMP (if available on the host sytem) so that
+#' multiple workers can explore the solution space in parallel, synchronizing to pick the best
+#' answer after a given computation budget has elapsed.
 #'
-#' @seealso \url{http://www.bebr.ufl.edu/sites/default/files/Borgatti%20-%202006%20-%20Identifying%20sets%20of%20key%20players%20in%20a%20social%20networ.pdf}
+#' @seealso \url{http://www.bebr.ufl.edu/sites/default/files/Borgatti\%20-\%202006\%20-\%20Identifying\%20sets\%20of\%20key\%20players\%20in\%20a\%20social\%20networ.pdf}
 #'
 #' @param g The igraph object to analyze.
 #' @param k The size of the KP-set
@@ -143,18 +82,20 @@ betweenness <- function(g, snap=T) {
 #' @param maxsec The total computation budget for the optimization, in seconds
 #' @param roundsec Number of seconds in between synchronizing workers' answer
 #' @return a vector with the vertex number of each vertex in the selected set S.
-keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
-  el <- get.edgelist(g, names=F)
+#'
+#' @export
+keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 30) {
+  el <- igraph::get.edgelist(g, names=F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el))
   m <- as.integer(length(el)/2)
 
   s <- .Call("snap_keyplayer_R", el_i, n, m, as.integer(k), prob, tol, as.integer(maxsec), as.integer(roundsec), PACKAGE="influenceR")
   
-  V(g)[which(s>0)]
+  igraph::V(g)[which(s>0)]
 }
 
-#' Compute bridging scores for a given graph.
+#' Valente's bridging vertex measure.
 #'
 #' A node's bridging score is the average decrease in cohesiveness if each of
 #' its edges were removed from the graph.
@@ -169,10 +110,10 @@ keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
 #' across vertices. If you would like to use MPI:
 #' \itemize{
 #' \item{}{An MPI implementation, such as OpenMPI, must be installed on your system}
-#' \item{}{R must be compiled with the --with-mpi option}
+#' \item{}{the influenceR package must be compiled with the --with-mpi option}
 #' \item{}{the Rmpi and snow packages must be installed and loaded prior to the bridging invocation}
-#' \item{}{start R with the "mpirun -n 1" wrapper}
-#' \item{}{set MPI=True in the arguments to bridging}
+#' \item{}{start R with the "mpirun -np 1" wrapper}
+#' \item{}{set MPI = True in the arguments to bridging}
 #' }
 #' 
 #' @examples
@@ -183,90 +124,98 @@ keyplayer <- function(g, k, prob=0.0, tol=0.0001, maxsec=600, roundsec=30) {
 #' g <- dimacs.to.graph("mygraph.dim")
 #' bridging(g, MPI=T)
 #' }
-bridging <- function(g, MPI=F) {
+#'
+#' @export
+bridging <- function(g, MPI = F) {
   
-  el <- get.edgelist(g, names=F)
+  el <- igraph::get.edgelist(g, names = F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el_i))
-  m <- as.integer(length(el_i)/2)
+  m <- as.integer(length(el_i) / 2)
   
   if(!MPI) {
-    x <- .Call("snap_bridging_R", el_i, n, m, as.integer(FALSE), as.integer(0), PACKAGE="influenceR")
-    names(x) <- V(g)$name
+    x <- .Call("snap_bridging_R", el_i, n, m, as.integer(FALSE), as.integer(0), PACKAGE = "influenceR")
+    names(x) <- igraph::V(g)$name
     return(x)
   }
   if("x" == "@HAVE_MPI@x")
-      stop("MPI requested but not available. Recompile with the --with-mpi option.")
+      stop("MPI is not available. Recompile with the --with-mpi option.")
   
-  if ("package:snow" %in% search()) {
-    np <-  mpi.universe.size() - 1
-    cl <- makeMPIcluster(np)
+  if (requireNamespace("snow", quietly = TRUE)) {
+    np <-  Rmpi::mpi.universe.size() - 1
+    cl <- snow::makeMPIcluster(np)
     
-    x <- clusterApply(cl, 0:(np-1), function(rank, el_i, n, m) {
+    x <- snow::clusterApply(cl, 0:(np-1), function(rank, el_i, n, m) {
         
         library(influenceR)
-        .Call("snap_bridging_R", el_i, n, m, as.integer(TRUE), as.integer(rank), PACKAGE="influenceR")
+        .Call("snap_bridging_R", el_i, n, m, as.integer(TRUE), as.integer(rank), PACKAGE = "influenceR")
         
     }, el_i, n, m) # ensure these values are exported.
     
-    stopCluster(cl)
-    mpi.exit()
+    snow::stopCluster(cl)
+    Rmpi::mpi.exit()
     
     v = x[1]
-    names(v) <- V(g)$name 
+    names(v) <- igraph::V(g)$name 
     return(v)
   }
   else
-    stop("MPI is not available. Load Rmpi and snow and supply a cluster object.")
+    stop("MPI is not available. Load Rmpi and snow.")
     
 }
 
-#' Compute Burt's effective network size for a graph.
+#' Burt's effective network size vertex measure.
 #'
 #' @param g The igraph object to analyze.
 #' @return A numeric vector with the effective network size for each vertex
+#'
+#' @export
 ens <- function(g) {
-  A <- get.adjacency(g)   # This will be sparse, which is great.
-  S <- crossprod(A)       # S[i,j] = # of shared neighbors between i,j
+  A <- igraph::get.adjacency(g)   # This will be sparse, which is great.
+  S <- Matrix::crossprod(A)       # S[i,j] = # of shared neighbors between i,j
   Q <- A * S              # Q[i,j] = # of shared neighbors if i and j are neighbors, 0 else
   qsum <- rowSums(Q)
   deg <- rowSums(A)
-  ens <- deg - (qsum/deg)
+  ens <- deg - (qsum / deg)
   ens[is.nan(ens)] <- 0 # If a vertex has no neighbors, make its ENS 0
-  names(ens) <- V(g)$name
+  names(ens) <- igraph::V(g)$name
   ens
 }
 
-#' Compute Burt's graph constraint for a graph.
+#' Burt's graph constraint vertex measure.
+#'
+#' This is an alternative to the implementation of Burt's consraint in the
+#' igraph package.
 #'
 #' @param g The igraph object to analyze.
 #' @param v vertices over which to compute constraint (default to all)
 #' @return A numeric vector with the constraint score for each vertex in v
+#'
+#' @export
 constraint <- function(g, v=V(g)) {
   
   process_sparse <- function(A, Ai, deg) {
     M <- as(A, 'TsparseMatrix')
-    x <- .Call("process_sparse_R", M@i, M@j, M@x, Ai, deg, nnzero(M))
+    x <- .Call("process_sparse_R", M@i, M@j, M@x, Ai, deg, Matrix::nnzero(M), PACKAGE = "influenceR")
     M@x <- x
     M
   }
   
-  A <- get.adjacency(g, sparse=T)
+  A <- igraph::get.adjacency(g, sparse=T)
   n <- dim(A)[1]
   deg <- rowSums(A)
 
   constraint_i <- function(i) {
     # process sparse does this: jq <- drop0(t(A*A[,i]) * A[,i]); jqd <- drop0(jq * deg)
-    jqd <- process_sparse(A, A[i,], deg)
+    jqd <- process_sparse(A, A[i, ], deg)
     
-    #jqd <- drop0(jq * deg)
-    jqd <- drop0(jqd)
-    jqd@x <- (1/jqd@x) * (1/deg[i])
+    jqd <- Matrix::drop0(jqd)
+    jqd@x <- (1 / jqd@x) * (1 / deg[i])
          
     Sj <- colSums(jqd)
   
-    idx <- as.numeric(neighbors(g, i))
-    Sj[idx] <- Sj[idx] + (1/deg[i])
+    idx <- as.numeric(igraph::neighbors(g, i))
+    Sj[idx] <- Sj[idx] + (1 / deg[i])
     
     Sj2 <- Sj * Sj
     sum(Sj2)
@@ -275,53 +224,4 @@ constraint <- function(g, v=V(g)) {
   vals <- sapply(v, constraint_i)
   names(vals) <- v$name
   vals
-}
-
-
-main <- function(args) {
-  
-  graph <- dimacs.to.graph(args[[2]])
-  func <- args[[1]]
-  centrality <- c(eigen=eigencentrality, betweenness=betweenness, ens=ens, constraint=constraint, bridging=bridging)
-  
-  x <- centrality[[func]](graph)
-  
-  write.table(x, quote=F, row.names=F, col.names=F)
-}
-
-    
-#' Convert a network object to a dimacs object.
-#'
-#' @param net A network object
-#' @return A dimacs object
-network.to.dimacs = function(g, fname) {
-    net <- sna::as.edgelist.sna(g)
-    n <- attr(net, "n")
-    m <- nrow(net)
-
-    row.names(net) <- rep("e", m)
-
-    # header
-    write(paste("p sp", n, m), file=fname)
-
-    # body
-    write.table(net, col.names=F, quote=F, file=fname, append=T)
-}
-
-#' Convert igraph graph object to a dimacs object.
-#'
-#' @param net A graph object
-#' @return A dimacs object
-igraph.to.dimacs = function(g, fname) {
-    net <- igraph::as_edgelist(g)
-    n <- igraph::vcount(g)
-    m <- igraph::ecount(g)
-
-    row.names(net) <- rep("e", m)
-
-    # header
-    write(paste("p sp", n, m), file=fname)
-
-    # body
-    write.table(net, col.names=F, quote=F, file=fname, append=T)
 }

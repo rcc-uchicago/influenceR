@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_metrics.R
 \name{bridging}
 \alias{bridging}
-\title{Compute bridging scores for a given graph.}
+\title{Valente's bridging vertex measure.}
 \usage{
 bridging(g, MPI = F)
 }
@@ -18,10 +18,10 @@ This function can use MPI in order to parellelize the bridging computation
 across vertices. If you would like to use MPI:
 \itemize{
 \item{}{An MPI implementation, such as OpenMPI, must be installed on your system}
-\item{}{R must be compiled with the --with-mpi option}
+\item{}{the influenceR package must be compiled with the --with-mpi option}
 \item{}{the Rmpi and snow packages must be installed and loaded prior to the bridging invocation}
-\item{}{start R with the "mpirun -n 1" wrapper}
-\item{}{set MPI=True in the arguments to bridging}
+\item{}{start R with the "mpirun -np 1" wrapper}
+\item{}{set MPI = True in the arguments to bridging}
 }
 }
 \description{

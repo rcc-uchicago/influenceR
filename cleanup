@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rm configure R/graph_metrics.R 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_metrics.R
 \name{eigencentrality}
 \alias{eigencentrality}
-\title{Compute the eigencentrality values.}
+\title{Eigencentrality centrality measure.}
 \usage{
 eigencentrality(g)
 }
