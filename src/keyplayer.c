@@ -1,5 +1,6 @@
 #include <R.h>
 #include <Rinternals.h>
+#include <Rmath.h>
 
 #include <time.h>
 
@@ -17,7 +18,7 @@ void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxse
   int *allsets;
   time_t start;
 
-  srand(time(NULL));
+  GetRNGstate(); // rather than srand
     
   problem_t problem;
   problem.graph = g;
@@ -44,6 +45,7 @@ void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxse
   for (int i = 0; i < n; i++)
     KP[i] = s[i];
   
+  PutRNGstate();
 	return;	
 }
 
@@ -69,7 +71,7 @@ void keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long m
     np =  omp_get_num_threads();
     rank = omp_get_thread_num();
     
-    srand(time(NULL) + rank);
+    GetRNGState();
     
     if (rank == 0) {
       allsets = (int *) R_alloc(n * np, sizeof(int));
@@ -150,5 +152,7 @@ void keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long m
   int *s = &allsets[0]; // s set for rank 0, which contains the best (as do all &allsets[i*n])
   for (int i = 0; i < n; i++)
     KP[i] = s[i];
+  
+  PutRNGstate();
 #endif
 }

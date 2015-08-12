@@ -39,7 +39,7 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
       v = EL[2*i+1];
       
       if ((u <= 0) || (u > n) || (v <= 0) || (v > n)) {
-          fprintf(stderr, "Error reading edge # %ld (%ld, %ld) in the input file."
+          REprintf("Error reading edge # %ld (%ld, %ld) in the input file."
                   " Please check the input graph file.\n", count+1, u, v);
           return 1;
       }
@@ -53,7 +53,7 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
     }
 
     if (count != m) {
-        fprintf(stderr, "Error! Number of edges specified in problem line (%ld)" 
+        REprintf("Error! Number of edges specified in problem line (%ld)" 
                 " does not match the total number of edges (%ld) in file."
                 " Please check"
                 " the graph input file.\n", m, count);
@@ -129,7 +129,7 @@ int snap_betweenness(int *E, long n, long m, double *BC) {
   graph_t G;
   int r = read_graph_from_edgelist(&G, E, n, m);
   if (r) {
-    printf("Error code!");
+    REprintf("Error reading graph from edgelist\n");
     return 1;
   }
   vertex_betweenness_centrality(&G, BC, n);
@@ -201,15 +201,15 @@ SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP sMPI, SEXP srank) {
   if (rank == 0) {
     //sBC = PROTECT(allocVector(REALSXP, n));
 #ifdef VERBOSE
-    printf("Rank %d: allocated memory for %d doubles\n", rank, n);
+    Rprintf("Rank %d: allocated memory for %d doubles\n", rank, n);
 #endif
     if (REAL(sBC) == NULL) {
-        printf("Rank %d: error!\n", rank);
-        exit(1);
+        REprintf("Rank %d: error!\n", rank);
+        return NULL;
     }
   }
   else {
-    printf("Rank %d: Did not allocate memory\n", rank);
+    Rprintf("Rank %d: Did not allocate memory\n", rank);
   }
   double *BC = REAL(sBC);
 

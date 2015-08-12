@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <R.h>
 #include <Rinternals.h>
 
@@ -64,7 +63,7 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   #ifdef VERBOSE
-  fprintf(stderr, "hello from main_brdiging, process %d\n", rank);
+  REprintf("hello from main_brdiging, process %d\n", rank);
   #endif
   
  	int n = G->n; /* number of nodes */
@@ -78,7 +77,7 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
   end = end > m/2 ? m/2 : end;
   
 #ifdef VERBOSE
-  fprintf(stderr, "%d range: %d-%d\n", rank, start, end); 
+  REprintf("%d range: %d-%d\n", rank, start, end); 
 #endif
   
   double *buf = (double *) R_alloc(bufsize, sizeof(double));
@@ -112,7 +111,7 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
   }
 
 #ifdef VERBOSE
-  fprintf(stderr, "Rank %d done reading edges\n", rank);
+  REprintf("Rank %d done reading edges\n", rank);
 #endif
   
 
@@ -134,7 +133,7 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
     for (int i = 0; i < m; i++) {
   	  closeness_by_edge[edge_indices[i]] = closeness_buf[i];
 #ifdef VERBOSE
-      printf("CBE %d %g\n", edge_indices[i], closeness_buf[i]); 
+      REprintf("CBE %d %g\n", edge_indices[i], closeness_buf[i]); 
 #endif
     }
     
@@ -199,7 +198,7 @@ double closeness(graph_t *G, long ignore_edge0, long ignore_edge1)
 	double *distance = (double *) R_alloc(sizeof(double), n);
   assert(distance);
   if (distance == NULL) {
-    fprintf(stderr, "RAN OUT OF MEM\n");
+    REprintf("Ran out of memory");
   }
   
 	double sum = 0;
@@ -402,7 +401,7 @@ OMP("omp barrier")
 
 #ifdef DIAGNOSTIC
         if (tid == 0) {
-            fprintf(stderr, "Search from vertex %ld," 
+            REPrintf("Search from vertex %ld," 
                     " No. of vertices visited: %ld\n", src, count);
         }
 #endif
@@ -434,7 +433,7 @@ OMP("omp barrier")
 
 #ifdef DIAGNOSTIC    
     elapsed_time = get_seconds() - elapsed_time;
-    fprintf(stderr, "Time taken for BFS: %lf seconds\n", elpased_time);
+    REprintf("Time taken for BFS: %lf seconds\n", elpased_time);
 #endif
     return count;
 }

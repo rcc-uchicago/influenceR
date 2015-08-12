@@ -4,7 +4,7 @@
 \alias{constraint}
 \title{Burt's graph constraint vertex measure.}
 \usage{
-constraint(g, v = V(g))
+constraint(g, v = igraph::V(g))
 }
 \arguments{
 \item{g}{The igraph object to analyze.}

@@ -1,4 +1,6 @@
 #include <graph_defs.h>
+#include <Rmath.h>
+#include <limits.h>
 
 #include "keyplayer-utils.h"
 
@@ -9,10 +11,14 @@ double * BFS_single(graph_t *g, int src, double *res);
 long BFS_parallel_frontier_expansion_with_distance(graph_t* G, long src, long diameter, double *distance);
 void regen(int *gen, int *s, int *t, int n, int k);
 
+int int_rand() {
+  return (int) (unif_rand() * INT_MAX);
+}
+
 void gen_starting_set(int n, int k, int *s) {
     memset(s, 0, n * sizeof(int));
     for(int i = 0; i < k; i++) {
-        int t = rand() % n;
+        int t = int_rand() % n;
         while(s[t] != 0)
             t = (t + 1) % n;
         s[t] = 1;
@@ -148,8 +154,7 @@ double get_next_state_graph(problem_t *this, int n, int *gen, int k, double p, i
 	if (this->distance == NULL) {
 		this->distance = (double *) malloc(n*k*sizeof(double));
 		if (!this->distance) {
-			printf("error with malloc!");
-			exit(1);
+			return 0;
 		}
 		BFS_multiple(graph, s, k, this->distance);
 	}
@@ -157,20 +162,20 @@ double get_next_state_graph(problem_t *this, int n, int *gen, int k, double p, i
 	double fit = kpmetric_graph(graph, this->distance, n, s, t, k, argmin);
 	int tries = 0, u, v;
 	while (1) {
-		u = s[rand() % k];
+		u = s[int_rand() % k];
 #ifdef DEBUG
         // we want to match how we get a random v in the non-graph code. this sucks.
-		v = rand() % n;
+		v = int_rand % n;
 		while(gen[v] != 0)
 			v = (v + 1) % n;
 #else
-        v = t[rand() % (n-k)];
+        v = t[int_rand() % (n-k)];
 #endif				
 
 		
   double fit_ = kpmetric_graph_check(graph, this->distance, n, s, t, k, argmin, u, v);
 		
-	if (fit_ > fit || ((double) rand()/ ((double) RAND_MAX)) < p) {
+	if (fit_ > fit || unif_rand() < p) {
 		*ua = u;
 		*va = v;
 		fit = fit_;
@@ -188,8 +193,9 @@ double get_next_state_graph(problem_t *this, int n, int *gen, int k, double p, i
 	/* replace row u with row v */
 	double * new_distance = (double *) malloc(n*k*sizeof(double));
 	if (! new_distance) {
-		printf("error with malloc!");
-		exit(1);
+		//printf("error with malloc!");
+		//exit(1);
+    return 0;
 	}
 	int j = 0; // index into new_distance
 	int vdone = 0;
@@ -212,8 +218,9 @@ double get_next_state_graph(problem_t *this, int n, int *gen, int k, double p, i
 		j++;
 	}
 	if (j != k) {
-		printf("fatal error!\n");
-		exit(1);
+		//printf("fatal error!\n");
+		//exit(1);
+    return 0;
 	}
 		
 	double *tmp = this->distance;
@@ -262,11 +269,7 @@ void regen(int *gen, int *s, int *t, int n, int k)
 			t[ti] = i;  
 			ti++;
 		}
-	}   
-	if (si != k || ti != (n-k)) {
-		printf("error \n");
-		exit(1);
-	}               
+	}         
                         
 	return;
 }       
@@ -442,7 +445,7 @@ OMP("omp barrier")
 
 #ifdef DIAGNOSTIC
         if (tid == 0) {
-            fprintf(stderr, "Search from vertex %ld," 
+            REprintf("Search from vertex %ld," 
                     " No. of vertices visited: %ld\n", src, count);
         }
 #endif
@@ -474,7 +477,7 @@ OMP("omp barrier")
 
 #ifdef DIAGNOSTIC    
     elapsed_time = get_seconds() - elapsed_time;
-    fprintf(stderr, "Time taken for BFS: %lf seconds\n", elpased_time);
+    REprintf("Time taken for BFS: %lf seconds\n", elpased_time);
 #endif
     return count;
 }

@@ -192,7 +192,7 @@ ens <- function(g) {
 #' @return A numeric vector with the constraint score for each vertex in v
 #'
 #' @export
-constraint <- function(g, v=V(g)) {
+constraint <- function(g, v=igraph::V(g)) {
   
   process_sparse <- function(A, Ai, deg) {
     M <- as(A, 'TsparseMatrix')

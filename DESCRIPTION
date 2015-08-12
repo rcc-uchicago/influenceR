@@ -17,7 +17,7 @@ Description: Compute various node significance measures on networks. This
     on your system: The bridging implementation can make use of MPI to spread
     the computation across multiple CPUs.
 Depends: R (>= 3.1.2)
-License: somelicense
+License: GPL-2
 LazyData: true
 Imports: 
     igraph (>= 0.7.1),
