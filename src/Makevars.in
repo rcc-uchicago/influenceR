@@ -1,11 +1,11 @@
 SNAP = snap-0.4
-PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(SNAP)/include -std=c99
+PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(SNAP)/include
 
 HAVE_MPI = @HAVE_MPI@
 
 ifeq ($(HAVE_MPI),1)
   PKG_LIBS_MPI =  -lmpi  -lutil -lpthread
-  PKG_CFLAGS += -DUSE_MPI
+  PKG_CFLAGS = $(PKG_CFLAGS) -DUSE_MPI
 endif
 
 SNAP_OPENMP = $(and $(SHLIB_OPENMP_CFLAGS),--enable-openmp)

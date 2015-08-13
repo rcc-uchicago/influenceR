@@ -174,8 +174,8 @@ ens <- function(g) {
   A <- igraph::get.adjacency(g)   # This will be sparse, which is great.
   S <- Matrix::crossprod(A)       # S[i,j] = # of shared neighbors between i,j
   Q <- A * S              # Q[i,j] = # of shared neighbors if i and j are neighbors, 0 else
-  qsum <- rowSums(Q)
-  deg <- rowSums(A)
+  qsum <- Matrix::rowSums(Q)
+  deg <- Matrix::rowSums(A)
   ens <- deg - (qsum / deg)
   ens[is.nan(ens)] <- 0 # If a vertex has no neighbors, make its ENS 0
   names(ens) <- igraph::V(g)$name
@@ -203,7 +203,7 @@ constraint <- function(g, v=igraph::V(g)) {
   
   A <- igraph::get.adjacency(g, sparse=T)
   n <- dim(A)[1]
-  deg <- rowSums(A)
+  deg <- Matrix::rowSums(A)
 
   constraint_i <- function(i) {
     # process sparse does this: jq <- drop0(t(A*A[,i]) * A[,i]); jqd <- drop0(jq * deg)
@@ -212,7 +212,7 @@ constraint <- function(g, v=igraph::V(g)) {
     jqd <- Matrix::drop0(jqd)
     jqd@x <- (1 / jqd@x) * (1 / deg[i])
          
-    Sj <- colSums(jqd)
+    Sj <- Matrix::colSums(jqd)
   
     idx <- as.numeric(igraph::neighbors(g, i))
     Sj[idx] <- Sj[idx] + (1 / deg[i])
