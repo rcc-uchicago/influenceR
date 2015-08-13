@@ -24,6 +24,10 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
     dest = (attr_id_t *) R_alloc(m, sizeof(attr_id_t));
     degree = (attr_id_t *) R_alloc(n, sizeof(attr_id_t));
     for (int i = 0; i < n; i++) degree[i] = 0;
+    for (int i = 0; i < m; i++) {
+      src[i] = 0;
+      dest[i] = 0;
+    }
 
     assert(src != NULL);
     assert(dest != NULL);
@@ -31,6 +35,8 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
 
     int_weight = (int *) R_alloc(m, sizeof(int));
     assert(int_weight != NULL);
+    for (int i = 0; i < m; i++)
+      int_weight[i] = 0;
 
     count = 0;
 
@@ -73,11 +79,13 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
 
     G->edge_id = (attr_id_t *) R_alloc(2*m, sizeof(attr_id_t)); //calloc
     assert(G->edge_id != NULL);
-    for(int i = 0; i < 2*m; i++)
+    for (int i = 0; i < 2*m; i++)
       G->edge_id[i] = 0;
     
     G->numEdges = (attr_id_t *) R_alloc((n+1), sizeof(attr_id_t));
     assert(G->numEdges != NULL);
+    for (int i = 0; i < n+1; i++)
+      G->numEdges[i] = 0;
 
     G->undirected = 1;
     G->weight_type = 1;
@@ -88,6 +96,8 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
 
     G->int_weight_e = (int *) R_alloc(G->m, sizeof(int));       
     assert(G->int_weight_e != NULL);
+    for (int i = 0; i < G->m; i++)
+      G->int_weight_e[i] = 0;
 
     /* ToDo: parallelize this step */
     G->numEdges[0] = 0; 
