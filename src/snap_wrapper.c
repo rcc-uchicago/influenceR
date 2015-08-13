@@ -29,7 +29,7 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
     assert(dest != NULL);
     assert(degree != NULL);
 
-    int_weight = (int *) malloc(m * sizeof(int));
+    int_weight = (int *) R_alloc(m, sizeof(int));
     assert(int_weight != NULL);
 
     count = 0;
@@ -66,13 +66,17 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
        }
      */
 
-    G->endV = (attr_id_t *) calloc(2*m, sizeof(attr_id_t));
+    G->endV = (attr_id_t *) R_alloc(2*m, sizeof(attr_id_t)); //calloc
     assert(G->endV != NULL);
+    for (int i = 0; i < 2*m; i++)
+      G->endV[i] = 0;
 
-    G->edge_id = (attr_id_t *) calloc(2*m, sizeof(attr_id_t));
+    G->edge_id = (attr_id_t *) R_alloc(2*m, sizeof(attr_id_t)); //calloc
     assert(G->edge_id != NULL);
-
-    G->numEdges = (attr_id_t *) malloc((n+1)*sizeof(attr_id_t));
+    for(int i = 0; i < 2*m; i++)
+      G->edge_id[i] = 0;
+    
+    G->numEdges = (attr_id_t *) R_alloc((n+1), sizeof(attr_id_t));
     assert(G->numEdges != NULL);
 
     G->undirected = 1;
@@ -82,7 +86,7 @@ int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
     G->n = n;
     G->m = 2*m;
 
-    G->int_weight_e = (int *) malloc(G->m * sizeof(int));       
+    G->int_weight_e = (int *) R_alloc(G->m, sizeof(int));       
     assert(G->int_weight_e != NULL);
 
     /* ToDo: parallelize this step */
@@ -133,6 +137,7 @@ int snap_betweenness(int *E, long n, long m, double *BC) {
     return 1;
   }
   vertex_betweenness_centrality(&G, BC, n);
+  
   return 0;
 }
 

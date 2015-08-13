@@ -56,6 +56,8 @@ betweenness <- function(g, snap=T) {
   m <- as.integer(length(el)/2) # TODO: for directed too?
   
   vals <- .Call("snap_betweenness_R", el_i, n, m, PACKAGE="influenceR")
+  vals[vals<2^-128] <- 0
+  vals[is.nan(vals)] <- 0
   names(vals) <- igraph::V(g)$name
   vals
 }
