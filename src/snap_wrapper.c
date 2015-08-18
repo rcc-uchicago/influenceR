@@ -162,6 +162,9 @@ SEXP snap_betweenness_R(SEXP sE, SEXP sn, SEXP sm)
   int *E = INTEGER(sE);
   
   double *BC = REAL(sBC);
+  int i = 0;
+  for (i = 0; i < n; i++)
+    BC[i] = 0;
   
   snap_betweenness(E, n, m, BC);
   

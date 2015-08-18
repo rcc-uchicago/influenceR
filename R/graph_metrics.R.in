@@ -26,6 +26,9 @@ csv.to.igraph <- function(fname) {
 #'
 #' @export
 eigencentrality <- function(g) {
+  if (!igraph::is_igraph(g)) {
+    stop("Not a graph object")
+  }
   igraph::evcent(g, scale=F)$vector
 }
 
@@ -45,7 +48,9 @@ eigencentrality <- function(g) {
 #'
 #' @export
 betweenness <- function(g, snap=T) {
-  
+  if (!igraph::is_igraph(g)) {
+    stop("Not a graph object")
+  }
 # 1/2 the values of our betweenness code, which is because this is UNDIRECTED for real
   if (!snap)
     return(igraph::betweenness(g))
@@ -87,6 +92,9 @@ betweenness <- function(g, snap=T) {
 #'
 #' @export
 keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 30) {
+  if (!igraph::is_igraph(g)) {
+    stop("Not a graph object")
+  }
   el <- igraph::get.edgelist(g, names=F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el))
@@ -129,7 +137,9 @@ keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 3
 #'
 #' @export
 bridging <- function(g, MPI = F) {
-  
+  if (!igraph::is_igraph(g)) {
+    stop("Not a graph object")
+  }
   el <- igraph::get.edgelist(g, names = F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el_i))
@@ -173,6 +183,9 @@ bridging <- function(g, MPI = F) {
 #'
 #' @export
 ens <- function(g) {
+  if (!igraph::is_igraph(g)) {
+    stop("Not a graph object")
+  }
   A <- igraph::get.adjacency(g)   # This will be sparse, which is great.
   S <- Matrix::crossprod(A)       # S[i,j] = # of shared neighbors between i,j
   Q <- A * S              # Q[i,j] = # of shared neighbors if i and j are neighbors, 0 else
@@ -195,6 +208,9 @@ ens <- function(g) {
 #'
 #' @export
 constraint <- function(g, v=igraph::V(g)) {
+  if (!igraph::is_igraph(g)) {
+    stop("Not a graph object")
+  }
   
   process_sparse <- function(A, Ai, deg) {
     M <- as(A, 'TsparseMatrix')
