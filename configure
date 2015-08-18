@@ -603,7 +603,9 @@ LIBOBJS
 LRT_LIBS
 ICC_FALSE
 ICC_TRUE
-HAVE_MPI
+SNAP_OPENMP
+USE_MPI
+PKG_LIBS_MPI
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -2752,13 +2754,180 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_mpi_MPI_Init" >&5
 $as_echo "$ac_cv_lib_mpi_MPI_Init" >&6; }
 if test "x$ac_cv_lib_mpi_MPI_Init" = x""yes; then
-  HAVE_MPI=1
+  PKG_LIBS_MPI=-lmpi\ -lutil\ -lpthread
+ USE_MPI=-DUSE_MPI
 
 else
   { { $as_echo "$as_me:$LINENO: error: \"Unable to find MPI library\"" >&5
 $as_echo "$as_me: error: \"Unable to find MPI library\"" >&2;}
    { (exit 1); exit 1; }; }
 fi
+
+fi
+
+
+##### http://autoconf-archive.cryp.to/ax_openmp.html
+#
+# SYNOPSIS
+#
+#   AX_OPENMP([ACTION-IF-FOUND[, ACTION-IF-NOT-FOUND]])
+#
+# DESCRIPTION
+#
+#   This macro tries to find out how to compile programs that use
+#   OpenMP a standard API and set of compiler directives for parallel
+#   programming (see http://www-unix.mcs/)
+#
+#   On success, it sets the
+#   OPENMP_CFLAGS/OPENMP_CXXFLAGS/OPENMP_F77FLAGS output variable to
+#   the flag (e.g. -omp) used both to compile *and* link OpenMP
+#   programs in the current language.
+#
+#   NOTE: You are assumed to not only compile your program with these
+#   flags, but also link it with them as well.
+#
+#   If you want to compile everything with OpenMP, you should set:
+#
+#       CFLAGS="$CFLAGS $OPENMP_CFLAGS"
+#       #OR#  CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
+#       #OR#  FFLAGS="$FFLAGS $OPENMP_FFLAGS"
+#
+#   (depending on the selected language).
+#
+#   The user can override the default choice by setting the
+#   corresponding environment variable (e.g. OPENMP_CFLAGS).
+#
+#   ACTION-IF-FOUND is a list of shell commands to run if an OpenMP
+#   flag is found, and ACTION-IF-NOT-FOUND is a list of commands to run
+#   it if it is not found. If ACTION-IF-FOUND is not specified, the
+#   default action will define HAVE_OPENMP.
+#
+# LAST MODIFICATION
+#
+#   2006-01-24
+#
+# COPYLEFT
+#
+#   Copyright (c) 2006 Steven G. Johnson <stevenj@alum.mit.edu>
+#
+#   This program is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License as
+#   published by the Free Software Foundation; either version 2 of the
+#   License, or (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+#   02111-1307, USA.
+#
+#   As a special exception, the respective Autoconf Macro's copyright
+#   owner gives unlimited permission to copy, distribute and modify the
+#   configure scripts that are the output of Autoconf when processing
+#   the Macro. You need not follow the terms of the GNU General Public
+#   License when using or distributing such scripts, even though
+#   portions of the text of the Macro appear in them. The GNU General
+#   Public License (GPL) does govern all other use of the material that
+#   constitutes the Autoconf Macro.
+#
+#   This special exception to the GPL applies to versions of the
+#   Autoconf Macro released by the Autoconf Macro Archive. When you
+#   make and distribute a modified version of the Autoconf Macro, you
+#   may extend this special exception to the GPL to apply to your
+#   modified version as well.
+
+
+
+
+{ $as_echo "$as_me:$LINENO: checking for OpenMP flag of C compiler" >&5
+$as_echo_n "checking for OpenMP flag of C compiler... " >&6; }
+if test "${ax_cv_c_openmp+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  saveCFLAGS=$CFLAGS
+ax_cv_c_openmp=unknown
+# Flags to try:  -fopenmp (gcc), -openmp (icc), -mp (SGI & PGI),
+#                -xopenmp (Sun), -omp (Tru64), -qsmp=omp (AIX), none
+ax_openmp_flags="-fopenmp -openmp -mp -xopenmp -omp -qsmp=omp none"
+if test "x$OPENMP_CFLAGS" != x; then
+  ax_openmp_flags="$OPENMP_CFLAGS $ax_openmp_flags"
+fi
+for ax_openmp_flag in $ax_openmp_flags; do
+  case $ax_openmp_flag in
+    none) CFLAGS=$saveC ;;
+    *) CFLAGS="$saveCFLAGS $ax_openmp_flag" ;;
+  esac
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char omp_set_num_threads ();
+int
+main ()
+{
+return omp_set_num_threads ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 $as_test_x conftest$ac_exeext
+       }; then
+  ax_cv_c_openmp=$ax_openmp_flag; break
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+
+rm -rf conftest.dSYM
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+done
+CFLAGS=$saveCFLAGS
+
+fi
+{ $as_echo "$as_me:$LINENO: result: $ax_cv_c_openmp" >&5
+$as_echo "$ax_cv_c_openmp" >&6; }
+if test "x$ax_cv_c_openmp" = "xunknown"; then
+  :
+else
+  if test "x$ax_cv_c_openmp" != "xnone"; then
+    OPENMP_CFLAGS=$ax_cv_c_openmp
+  fi
+  SNAP_OPENMP=\--enable-openmp
 
 fi
 
