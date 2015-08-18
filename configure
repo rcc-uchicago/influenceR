@@ -604,6 +604,7 @@ LRT_LIBS
 ICC_FALSE
 ICC_TRUE
 SNAP_OPENMP
+HAVE_MPI
 USE_MPI
 PKG_LIBS_MPI
 OBJEXT
@@ -2756,6 +2757,7 @@ $as_echo "$ac_cv_lib_mpi_MPI_Init" >&6; }
 if test "x$ac_cv_lib_mpi_MPI_Init" = x""yes; then
   PKG_LIBS_MPI=-lmpi\ -lutil\ -lpthread
  USE_MPI=-DUSE_MPI
+ HAVE_MPI=1
 
 else
   { { $as_echo "$as_me:$LINENO: error: \"Unable to find MPI library\"" >&5
