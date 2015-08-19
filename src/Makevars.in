@@ -11,13 +11,6 @@ $(SHLIB): snap
 SNAP_CFLAGS = $(SNAP_OPENMP) CC="$(CC)" LIBS=@LRT_LIBS@
 
 snap:
-	(cd snap-0.4 \
-	if [ -z "$(SHLIB_OPENMP_CFLAGS)" ] \
-	then \
-		./configure $(SNAP_CFLAGS) \
-	else \
-		./configure --enable-openmp $(SNAP_CFLAGS) \
-	fi \
-	make)
+	(cd snap-0.4; if [ -z "$(SHLIB_OPENMP_CFLAGS)" ]; then ./configure $(SNAP_CFLAGS); else ./configure --enable-openmp $(SNAP_CFLAGS); fi; make)
 
 
