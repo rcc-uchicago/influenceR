@@ -25,6 +25,7 @@ Imports:
 NeedsCompilation: yes
 Suggests:
     Rmpi,
-    snow
+    snow,
+    testthat
 URL: https://github.com/rcc-uchicago/hiv-social-networks
 
