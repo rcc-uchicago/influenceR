@@ -1,6 +1,5 @@
-#include <graph_defs.h>
-#include <graph_gen.h>
-#include <graph_metrics.h>
+#include "graph_defs.h"
+#include "graph_metrics.h"
 
 #include "bridging.h"
 #include "keyplayer.h"

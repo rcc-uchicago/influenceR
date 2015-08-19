@@ -4,7 +4,7 @@
 
 #include <time.h>
 
-#include <graph_defs.h>
+#include "graph_defs.h"
 
 #include "keyplayer-utils.h"
 

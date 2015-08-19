@@ -1,4 +1,4 @@
-#include <graph_defs.h>
+#include "graph_defs.h"
 
 #ifndef BRIDGING_H
 #define BRIDGING_H

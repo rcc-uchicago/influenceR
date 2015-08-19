@@ -1,8 +1,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#include <graph_defs.h>
-#include <graph_gen.h>
+#include "graph_defs.h"
+
 
 #ifdef USE_MPI
 #include <mpi.h>
