@@ -1,13 +1,15 @@
 #include "graph_defs.h"
 #include "graph_metrics.h"
-#include "utils.h"
+#include "prefix_sums.h"
 
 /* We replace sprng from the SNAP code with R RNG: */
-#include <R_ext/Random.h>
+#include <R.h>
 #define SPRNG_DEFAULT 0 
 #define init_sprng(a, b, c, d, e) NULL; GetRNGstate()
 #define sprng(a) unif_rand()
 #define free_sprng(a) PutRNGstate()
+#define fprintf(a, ...) REprintf(__VA_ARGS__)
+#define exit(x) error("SNAP code exited with error: %d\n", x)
 
 void vertex_betweenness_centrality_parBFS(graph_t* G, double* BC, long numSrcs) {
 
