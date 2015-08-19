@@ -1,0 +1,2 @@
+mv src/Makefile.win src/Makefile
+mv R/graph_metrics.R.win R/graph_metrics.R
