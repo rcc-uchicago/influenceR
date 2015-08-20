@@ -3,7 +3,6 @@
 
 #include "graph_defs.h"
 
-
 #ifdef USE_MPI
 #include <mpi.h>
 #endif
@@ -17,16 +16,16 @@ long BFS_parallel_frontier_expansion_bridging(graph_t* G, long src, long diamete
 double *bridging(graph_t *G, int *edgelist, double *scores)
 {  
   
- 	int n = G->n; /* number of nodes */
-	int m = G->m; /* number of edges */
+ int n = G->n; /* number of nodes */
+ int m = G->m; /* number of edges */
 
-  
+     
   long u, v, j, k;
   
 	/* 1) compute closeness by edge in file */
 	
   double *closeness_by_edge = (double *) R_alloc(m, sizeof(double));
-  
+
 #ifdef _OPENMP
 #pragma omp parallel for private(u, v, j, k)
 #endif
@@ -202,8 +201,9 @@ double closeness(graph_t *G, long ignore_edge0, long ignore_edge1)
 {
 	int n = G->n;
 	
-	double *distance = (double *) R_alloc(sizeof(double), n);
-  assert(distance);
+  // Must be thread-safe for OpenMP. R_alloc is not thread-safe.
+	double *distance = (double *) malloc(sizeof(double) * n);
+
   if (distance == NULL) {
     REprintf("Ran out of memory");
   }
@@ -222,7 +222,7 @@ double closeness(graph_t *G, long ignore_edge0, long ignore_edge1)
 		}
 	}
 
-	//free(distance);
+	free(distance);
 	return sum / (n*n - n);
 }
 
