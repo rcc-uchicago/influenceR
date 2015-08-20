@@ -24,8 +24,6 @@ Imports:
     Matrix (>= 1.1-4)
 NeedsCompilation: yes
 Suggests:
-    Rmpi,
-    snow,
     testthat
 URL: https://github.com/rcc-uchicago/hiv-social-networks
 

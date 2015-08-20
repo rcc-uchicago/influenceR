@@ -27,6 +27,9 @@ double *bridging(graph_t *G, int *edgelist, double *scores)
 	
   double *closeness_by_edge = (double *) R_alloc(m, sizeof(double));
   
+#ifdef _OPENMP
+#pragma omp parallel for private(u, v, j, k)
+#endif
   for (int i = 0; i < m/2; i++) {
   
     u = edgelist[i*2] - 1;
@@ -47,6 +50,10 @@ double *bridging(graph_t *G, int *edgelist, double *scores)
   /* 2) Compute closeness by vertex */
   
 	double cls = closeness(G, -1, -1); // normal closeness (use all edges)
+  
+#ifdef _OPENMP
+#pragma omp parallel for private(v)
+#endif
 	for (v = 0; v < n; v++) 
 		scores[v] = bridging_vertex_precomp(G, v, cls, closeness_by_edge);
   
