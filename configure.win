@@ -1,2 +1,0 @@
-mv src/Makevars.win src/Makevars
-mv R/graph_metrics.R.win R/graph_metrics.R

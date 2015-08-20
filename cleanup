@@ -1,2 +1,0 @@
-#!/bin/bash
-rm src/Makevars R/graph_metrics.R config.*

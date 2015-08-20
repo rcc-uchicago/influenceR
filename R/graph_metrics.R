@@ -113,30 +113,10 @@ keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 3
 #' @seealso \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
 #'
 #' @param g The igraph object to analyze.
-#' @param MPI True to use MPI 
 #' @return A numeric vector with the bridging score for each vertex
 #'
-#' This function can use MPI in order to parellelize the bridging computation
-#' across vertices. If you would like to use MPI:
-#' \itemize{
-#' \item{}{An MPI implementation, such as OpenMPI, must be installed on your system}
-#' \item{}{the influenceR package must be compiled with the --with-mpi option}
-#' \item{}{the Rmpi and snow packages must be installed and loaded prior to the bridging invocation}
-#' \item{}{start R with the "mpirun -np 1" wrapper}
-#' \item{}{set MPI = True in the arguments to bridging}
-#' }
-#' 
-#' @examples
-#' \dontrun{
-#' library(Rmpi)
-#' library(snow)
-#' library(influenceR)
-#' g <- dimacs.to.graph("mygraph.dim")
-#' bridging(g, MPI=T)
-#' }
-#'
 #' @export
-bridging <- function(g, MPI = F) {
+bridging <- function(g) {
   if (!igraph::is_igraph(g)) {
     stop("Not a graph object")
   }
@@ -145,35 +125,9 @@ bridging <- function(g, MPI = F) {
   n <- as.integer(max(el_i))
   m <- as.integer(length(el_i) / 2)
   
-  if(!MPI) {
-    x <- .Call("snap_bridging_R", el_i, n, m, as.integer(FALSE), as.integer(0), PACKAGE = "influenceR")
-    names(x) <- igraph::V(g)$name
-    return(x)
-  }
-  if("x" == "@HAVE_MPI@x")
-      stop("MPI is not available. Recompile with the --with-mpi option.")
-  
-  if (requireNamespace("snow", quietly = TRUE)) {
-    np <-  Rmpi::mpi.universe.size() - 1
-    cl <- snow::makeMPIcluster(np)
-    
-    x <- snow::clusterApply(cl, 0:(np-1), function(rank, el_i, n, m) {
-        
-        library(influenceR)
-        .Call("snap_bridging_R", el_i, n, m, as.integer(TRUE), as.integer(rank), PACKAGE = "influenceR")
-        
-    }, el_i, n, m) # ensure these values are exported.
-    
-    snow::stopCluster(cl)
-    Rmpi::mpi.exit()
-    
-    v = x[1]
-    names(v) <- igraph::V(g)$name 
-    return(v)
-  }
-  else
-    stop("MPI is not available. Load Rmpi and snow.")
-    
+  x <- .Call("snap_bridging_R", el_i, n, m, as.integer(FALSE), as.integer(0), PACKAGE = "influenceR")
+  names(x) <- igraph::V(g)$name
+  x
 }
 
 #' Burt's effective network size vertex measure.
