@@ -4,38 +4,17 @@
 \alias{bridging}
 \title{Valente's bridging vertex measure.}
 \usage{
-bridging(g, MPI = F)
+bridging(g)
 }
 \arguments{
 \item{g}{The igraph object to analyze.}
-
-\item{MPI}{True to use MPI}
 }
 \value{
 A numeric vector with the bridging score for each vertex
-
-This function can use MPI in order to parellelize the bridging computation
-across vertices. If you would like to use MPI:
-\itemize{
-\item{}{An MPI implementation, such as OpenMPI, must be installed on your system}
-\item{}{the influenceR package must be compiled with the --with-mpi option}
-\item{}{the Rmpi and snow packages must be installed and loaded prior to the bridging invocation}
-\item{}{start R with the "mpirun -np 1" wrapper}
-\item{}{set MPI = True in the arguments to bridging}
-}
 }
 \description{
 A node's bridging score is the average decrease in cohesiveness if each of
 its edges were removed from the graph.
-}
-\examples{
-\dontrun{
-library(Rmpi)
-library(snow)
-library(influenceR)
-g <- dimacs.to.graph("mygraph.dim")
-bridging(g, MPI=T)
-}
 }
 \seealso{
 \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
