@@ -3,6 +3,6 @@
 export(betweenness)
 export(bridging)
 export(constraint)
-export(eigencentrality)
+export(csv.to.igraph)
 export(ens)
 export(keyplayer)

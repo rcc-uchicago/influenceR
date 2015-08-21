@@ -3,38 +3,22 @@
 # LICENSE: GPLv2
 
 
-# Convert a CSV file to an igraph graph object. This is NOT exported.
-#
-# The first column should be sources, the second should be targets.
-#
-# @param fname A filename
-# @return An igraph graph object built from the filename.
-# @examples
-# csv.to.igraph("mygraph.csv")
+#' Convert a CSV file to an igraph graph object.
+#'
+#' The first column should be sources, the second should be targets.
+#'
+#' @param fname A filename
+#' @return An igraph graph object built from the filename.
+#' 
+#' @export
 csv.to.igraph <- function(fname) {
     x <- read.csv(fname) # this may be dangerous because of users' settings.
                          # See: http://r-pkgs.had.co.nz/r.html
-		x.char <- as.character(x)
-    el <- as.matrix(x.char[1:2])
+    el <- as.matrix(x[c(1,2)])
+    if(!is.character(el))
+      el <- apply(el, 2, as.character)
     
     igraph::graph.edgelist(el, directed=F)
-}
-
-#' Eigencentrality centrality measure.
-#'
-#' Eigencentrality is a measure of the influence of a node in a network based
-#' on the eigendecompositon of the adjacency matrix. This is a thin wrapper
-#' around the evcent function in the igraph package.
-#'
-#' @param g The igraph object to analyze
-#' @return A numeric vector with the eigencentrality score for each vertex
-#'
-#' @export
-eigencentrality <- function(g) {
-  if (!igraph::is_igraph(g)) {
-    stop("Not a graph object")
-  }
-  igraph::evcent(g, scale=F)$vector
 }
 
 #' Vertex betweenness centrality measure.
