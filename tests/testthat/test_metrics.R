@@ -9,7 +9,7 @@ test_that("metrics work as expected", {
   expect_equal(influenceR::eigencentrality(flo_graph), flo_eigen)
   expect_equal(influenceR::ens(flo_graph), flo_ens)
   expect_equal(influenceR::constraint(flo_graph), flo_constraint)
-  expect_equal(influenceR::bridging(flo_graph, MPI=F), flo_bridge)
+  expect_equal(influenceR::bridging(flo_graph), flo_bridge)
 })
 
 
