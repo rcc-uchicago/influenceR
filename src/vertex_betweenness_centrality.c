@@ -2,8 +2,6 @@
 #include "graph_metrics.h"
 #include "prefix_sums.h"
 
-#include <omp.h>
-
 /* We replace sprng from the SNAP code with R RNG: */
 #include <R.h>
 #define SPRNG_DEFAULT 0 
@@ -12,9 +10,6 @@
 #define free_sprng(a) omp_set_lock(&rnglock); PutRNGstate(); omp_unset_lock(&rnglock)
 #define fprintf(a, ...) REprintf(__VA_ARGS__)
 #define exit(x) error("SNAP code exited with error: %d\n", x)
-
-
-
 
 void vertex_betweenness_centrality_parBFS(graph_t* G, double* BC, long numSrcs) {
 
