@@ -1,8 +1,25 @@
+/*
+ AUTHOR: D.A. Bader and K. Madduri
+ LICENSE: GPLv2 
+ See: http://snap-graph.sourceforge.net/
+ 
+ This has been modified to use R print functions and random number generation.
+*/
+
 #include "graph_defs.h"
-#include "graph_metrics.h"
+#include "vertex_betweenness_centrality.h"
 #include "prefix_sums.h"
 
-/* We replace sprng from the SNAP code with R RNG: */
+/* 
+ The following macros allow the use of R print functions and RNG functions without
+ major changes to the SNAP code. Specifically, fprintf is replaced by REprintf, and
+ calls to sprng library are replaced by GetRNGstate, PutRNGstate, and unif_rand.
+ 
+ Known issue: R RNG is not intended to be used by multithreaded code. If OpenMP
+ is available, all threads will use the same random number stream (with RNG state
+ protected by a lock). This is not optimal. This may be addressed in future with
+ calls to the rlecuyer package (see https://cran.r-project.org/package=rlecuyer).
+*/
 #include <R.h>
 #define SPRNG_DEFAULT 0 
 #define init_sprng(a, b, c, d, e) NULL; omp_set_lock(&rnglock); GetRNGstate(); omp_unset_lock(&rnglock)
@@ -13,10 +30,11 @@
 
 void vertex_betweenness_centrality_parBFS(graph_t* G, double* BC, long numSrcs) {
 
-
+#ifdef _OPENMP
     omp_lock_t rnglock;
     omp_init_lock(&rnglock);
-
+#endif
+    
     attr_id_t *S;      /* stack of vertices in the order of non-decreasing 
                           distance from s. Also used to implicitly 
                           represent the BFS queue */
@@ -476,9 +494,11 @@ OMP("omp for")
 
 void vertex_betweenness_centrality_simple(graph_t* G, double* BC, long numSrcs) {
 
+#ifdef _OPENMP
     omp_lock_t rnglock;
     omp_init_lock(&rnglock);
-
+#endif
+    
     attr_id_t *in_degree, *numEdges, *pSums;
 #if RANDSRCS
     attr_id_t* Srcs; 

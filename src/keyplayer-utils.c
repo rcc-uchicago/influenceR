@@ -1,3 +1,13 @@
+/*
+ keyplayer-utils.c: Utilities and functions for Key Player implementation
+ See also: http://www.bebr.ufl.edu/sites/default/files/Borgatti%20-%202006%20-%20Identifying%20sets%20of%20key%20players%20in%20a%20social%20networ.pdf
+
+ AUTHOR: Simon Jacobs <sdjacobs@uchicago.edu>
+ LICENSE: GPLv2
+
+ Contains a fast version of the KPP-NEG metric (metric 9 in Borgatti 2006).
+*/
+
 #include "graph_defs.h"
 #include <Rmath.h>
 #include <limits.h>
@@ -274,8 +284,11 @@ void regen(int *gen, int *s, int *t, int n, int k)
 	return;
 }       
 
-	
-/* adadpted from breadth_first_search.c : BFS_parallel_frontier_expansion */
+
+/* 
+ Adapted from SNAP project, authors D.A. Bader and K. Madduri, see snap-graph.sourceforge.net
+ See breadth_first_search.c : BFS_parallel_frontier_expansion
+*/
 long BFS_parallel_frontier_expansion_with_distance(graph_t* G, long src, long diameter, double *distance) {
 
     attr_id_t* S;

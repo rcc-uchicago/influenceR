@@ -1,3 +1,14 @@
+/*
+ keyplayer.c: Key Player implementation
+ See also: http://www.bebr.ufl.edu/sites/default/files/Borgatti%20-%202006%20-%20Identifying%20sets%20of%20key%20players%20in%20a%20social%20networ.pdf
+ 
+ AUTHOR: Simon Jacobs <sdjacobs@uchicago.edu>
+ LICENSE: GPLv2
+ 
+ Implementation of optimization part of Key Player algorithm. Includes a version
+ parallelized with OpenMP.
+*/
+
 #include <R.h>
 #include <Rinternals.h>
 #include <Rmath.h>

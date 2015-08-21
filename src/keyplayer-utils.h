@@ -1,3 +1,5 @@
+/* Header file for keyplayer-utils.c */
+
 #ifndef KEYPLAYER_UTILS_H
 #define KEYPLAYER_UTILS_H
 

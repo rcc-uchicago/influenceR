@@ -1,7 +1,12 @@
-/* Taken from utils.h */
+/*
+ AUTHOR: D.A. Bader and K. Madduri
+ LICENSE: GPLv2
+ See: http://snap-graph.sourceforge.net/
+
+ Taken from utils.c
+*/
 
 #include "prefix_sums.h"
-
 
 void prefix_sums(attr_id_t *input, attr_id_t* result, attr_id_t* p, attr_id_t n) {
 

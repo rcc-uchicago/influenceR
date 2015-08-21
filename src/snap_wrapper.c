@@ -1,12 +1,20 @@
+/*
+ snap_wrapper.c: Interface R code to C code that utilizes SNAP data structures.
+ 
+ AUTHOR: Simon Jacobs <sdjacobs@uchicago.edu>
+ LICENSE: GPLv2
+ */
+
 #include "graph_defs.h"
-#include "graph_metrics.h"
 
 #include "bridging.h"
 #include "keyplayer.h"
+#include "vertex_betweenness_centrality.h"
 
 #include <R.h>
 #include <Rinternals.h>
 
+/* Adapted from SNAP code by D.A. Bader and K. Madduri */
 int read_graph_from_edgelist(graph_t* G, int *EL, long n, long m) {
 
     long i;

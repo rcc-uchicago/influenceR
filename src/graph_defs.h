@@ -1,3 +1,11 @@
+/*
+ AUTHOR: D.A. Bader and K. Madduri
+ LICENSE: GPLv2 
+ See: http://snap-graph.sourceforge.net/
+  
+ SNAP graph data structure, taken from snap-graph project.
+*/
+
 #ifndef _GRAPH_DEFS_H
 #define _GRAPH_DEFS_H
 
@@ -46,21 +54,6 @@ typedef struct {
     attr_id_t count;
     attr_id_t max_size;
 } adj_bheap_t;
-
-void adj_bheap_insert(adj_bheap_t* h, attr_id_t val);
-
-
-void dyn_array_insert(dyn_array_t* A, attr_id_t val);
-void dyn_array_delete(dyn_array_t* A, attr_id_t val);
-void dyn_array_init(dyn_array_t* A);
-void dyn_array_clear(dyn_array_t* A);
-void dyn_array_free(dyn_array_t* A);
-
-void sorted_dyn_array_insert(dyn_array_t* A, attr_id_t val);
-void sorted_dyn_array_delete(dyn_array_t* A, attr_id_t val);
-void sorted_dyn_array_init(dyn_array_t* A);
-void sorted_dyn_array_clear(dyn_array_t* A);
-void sorted_dyn_array_free(dyn_array_t* A);
 
 typedef struct {
     attr_id_t dest;
@@ -189,58 +182,6 @@ typedef struct
 
 } graph_t;
 
-/* A simple data structure to experiment with
-   dynamic networks
- */
-typedef struct
-{
-    /***
-     The minimal dynamic graph repesentation consists of:
-     n        -- the number of vertices
-     m        -- the number of edges
-     adj      -- representation of adjacencies of every vertex 
-     spanf    -- a forest of rooted spanning trees for answering connectivity
-     queries in the dynamic network
-     num_trees-- the number of spanning trees in the forest
-     Vertices are ordered from 0 in our internal representation
-    ***/
-    long n;
-    long m;
-    dyn_array_t* adj;
-    adj_bheap_t* Hadj;
-    attr_id_t* degree_thresh;
-    attr_id_t *pred;
-    attr_id_t *ts;
-} dyn_graph_t;
 
-void par_gen_RMAT_edges(dyn_graph_t* G, double* params, attr_id_t *src, attr_id_t* dest,
-        attr_id_t* degree);
-void dyn_ds_init_base(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        const attr_id_t* degree);
-void dyn_ds_init_nomalloc(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        const attr_id_t* degree);
-void dyn_ds_init_malloc(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest);
-void dyn_vpart_init_nomalloc(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        const attr_id_t* degree);
-void dyn_epart_init_nomalloc(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        const attr_id_t* degree);
-void dyn_heap_init_nomalloc(dyn_graph_t* G, const attr_id_t* src, const
-        attr_id_t* dest, const attr_id_t* degree);
-void dyn_hybrid_init_nomalloc(dyn_graph_t* G, const attr_id_t* src, const
-        attr_id_t* dest, const attr_id_t* degree);
-void dyn_gr_init(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        const attr_id_t* degree);
-void dyn_hybrid_gr_init(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        const attr_id_t* degree);
-void dyn_gr_del(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        const attr_id_t* degree, attr_id_t num_dels);
-void dyn_hybrid_gr_del(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        const attr_id_t* degree, attr_id_t numdels);
-void dyn_st_forest_construct(dyn_graph_t* G);
-void dyn_st_queries(dyn_graph_t* G, const attr_id_t* src, const attr_id_t* dest,
-        attr_id_t num_dels);
-void dyn_induced_subgraphs(dyn_graph_t* G, attr_id_t ts1, attr_id_t
-        ts2);
-void dyn_gr_traversal(dyn_graph_t* G, attr_id_t ts1, attr_id_t ts2);
 
 #endif

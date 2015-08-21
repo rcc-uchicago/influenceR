@@ -1,9 +1,8 @@
 /*
-######################################################################
-#
-# TODO: Add some header info.
-#
-######################################################################
+ process_sparce.c: Speed up computations on sparse matrix for constraint calculation.
+ 
+ AUTHOR: Simon Jacobs <sdjacobs@uchicago.edu>
+ LICENSE: GPLv2
 */
  
 

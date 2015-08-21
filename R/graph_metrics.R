@@ -1,3 +1,8 @@
+# graph_metrics.R: R code for vertex importance metrics.
+# AUTHOR: Simon Jacobs <sdjacobs@uchicago.edu>
+# LICENSE: GPLv2
+
+
 # Convert a CSV file to an igraph graph object. This is NOT exported.
 #
 # The first column should be sources, the second should be targets.

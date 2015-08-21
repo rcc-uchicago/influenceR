@@ -1,3 +1,5 @@
+/* Header file for process_sparse.c */
+
 #include <R.h>
 
 #ifndef PROCESS_SPARSE_H

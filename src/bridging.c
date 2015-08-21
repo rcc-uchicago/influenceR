@@ -1,3 +1,45 @@
+/*
+
+ bridging.c: Implementation of the bridging centrality metric
+ See also: http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/
+ 
+ AUTHOR: Simon Jacobs <sdjacobs@uchicago.edu>
+ LICENSE: GPLv2
+ 
+ Bridging can be parallelized with the following method, given a graph G:
+ for each edge e in parallel:
+  compute cohesiveness of G\e
+ for each vertex v in parallel:
+  compute average cohesiveness of E(v)
+
+ OpenMP parallelization is available. Compile with OpenMP flags (usually "-fopenmp").
+ 
+ Parallelization with MPI is experimental and will not compile by default. In
+ order to compile with MPI:
+  * an MPI implementation, such as OpenMPI, must be installed on your system
+  * compile with the -DUSE_MPI flag, and use the mpicc compiler.
+ 
+ Then,use the MPI function by starting R with "mpirun -n 1 R", load the Rmpi and snow
+ packages, and use the following code (assuming an igraph object `g'):
+ 
+el <- get.edgelist(g, names=F)
+el_i <- as.integer(t(el))
+n <- as.integer(max(el_i))
+m <- as.integer(length(el_i)/2)
+np <-  mpi.universe.size() - 1
+cl <- makeMPIcluster(np)
+x <- clusterApply(cl, 0:(np-1), function(rank, el_i, n, m) {
+  library(influenceR)
+  .Call("snap_bridging_R", el_i, n, m, as.integer(TRUE), as.integer(rank), PACKAGE="influenceR")
+}, el_i, n, m) # ensure these values are exported.
+stopCluster(cl)
+mpi.exit()
+bridging_values = x[1]
+names(bridging_values) <- V(g)$name 
+
+ 
+*/
+
 #include <R.h>
 #include <Rinternals.h>
 
