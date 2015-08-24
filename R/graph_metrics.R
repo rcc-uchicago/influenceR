@@ -56,16 +56,16 @@ betweenness <- function(g, snap=T) {
   vals
 }
 
-#' Compute a KPP-Neg set for a given graph.
+#' Compute a KPP-Pos set for a given graph.
 #'
 #' The "Key Player" family of node importance algorithms (Borgatti 2006) involves the selection
 #' of a metric of node importance and a combinatorial optimization strategy to
 #' choose the set S of vertices of size k that maximize that metric. This
-#' algorithm uses the KPP-Neg metric, whereby we sum over all vertices not in S the reciprocal
+#' algorithm uses the KPP-Pos metric, whereby we sum over all vertices not in S the reciprocal
 #' of the shortest distance to a vertex in S. For combinatorial optimization, we use
 #' stochastic gradient descent, where in each optimization round, we select a node u in S
 #' and v not in S at random, switch them, and accept the switch if evaluation of the
-#' metric improves. This implementation uses OpenMP (if available on the host sytem) so that
+#' metric improves. This implementation uses OpenMP (if available on the host system) so that
 #' multiple workers can explore the solution space in parallel, synchronizing to pick the best
 #' answer after a given computation budget has elapsed.
 #'
