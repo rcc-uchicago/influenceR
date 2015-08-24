@@ -21,10 +21,15 @@
  calls to the rlecuyer package (see https://cran.r-project.org/package=rlecuyer).
 */
 #include <R.h>
-#define SPRNG_DEFAULT 0 
+#define SPRNG_DEFAULT 0
+#ifdef _OPENMP
 #define init_sprng(a, b, c, d, e) NULL; omp_set_lock(&rnglock); GetRNGstate(); omp_unset_lock(&rnglock)
-#define sprng(a) unif_rand()
 #define free_sprng(a) omp_set_lock(&rnglock); PutRNGstate(); omp_unset_lock(&rnglock)
+#else
+#define init_sprng(a, b, c, d, e) NULL; GetRNGstate()
+#define free_sprng(a) PutRNGstate()
+#endif
+#define sprng(a) unif_rand()
 #define fprintf(a, ...) REprintf(__VA_ARGS__)
 #define exit(x) error("SNAP code exited with error: %d\n", x)
 
