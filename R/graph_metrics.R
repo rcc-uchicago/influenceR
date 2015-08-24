@@ -21,9 +21,9 @@ csv.to.igraph <- function(fname) {
     igraph::graph.edgelist(el, directed=F)
 }
 
-#' Vertex betweenness centrality measure.
+#' Vertex Betweenness centrality measure.
 #'
-#' The betweenness centrality score of a node u is the sum over all pairs s,t of the
+#' The Betweenness centrality score of a node u is the sum over all pairs s,t of the
 #' proportion of shortest paths between s and t that pass through u. This 
 #' function allows the use of either the SNAP betweenness implementation (default), or 
 #' the igraph betweenness function. The SNAP version makes use of OpenMP for 
@@ -121,11 +121,14 @@ bridging <- function(g) {
   x
 }
 
-#' Burt's effective network size vertex measure.
-#'
+#' Burt's Effective Network Size and Constraint index.
+#' The next two functions below provide ways to measure the actors' access to structural holes in a network. Structural holes 
+#' "provide opportunities to broker connections between people" (Burt 2008).
+
 #' @param g The igraph object to analyze.
 #' @return A numeric vector with the effective network size for each vertex
 #'
+#' @seealso \url{http://faculty.chicagobooth.edu/ronald.burt/research/files/NNappB.pdf}
 #' @export
 ens <- function(g) {
   if (!igraph::is_igraph(g)) {
@@ -142,10 +145,9 @@ ens <- function(g) {
   ens
 }
 
-#' Burt's graph constraint vertex measure.
+#' Burt's Constraint Index.
 #'
-#' This is an alternative to the implementation of Burt's consraint in the
-#' igraph package.
+#' The igraph package provides an implementation of Constraint; this is an alternate implementation.
 #'
 #' @param g The igraph object to analyze.
 #' @param v vertices over which to compute constraint (default to all)
