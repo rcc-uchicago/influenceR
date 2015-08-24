@@ -26,7 +26,8 @@ a vector with the vertex number of each vertex in the selected set S.
 The "Key Player" family of node importance algorithms (Borgatti 2006) involves the selection
 of a metric of node importance and a combinatorial optimization strategy to
 choose the set S of vertices of size k that maximize that metric. This
-algorithm uses the KPP-Pos metric, whereby we sum over all vertices not in S the reciprocal
+function implements KPP-Pos, an algorithm to to identify |S| actors that optimize information diffusion
+through the network. We sum over all vertices not in S the reciprocal
 of the shortest distance to a vertex in S. For combinatorial optimization, we use
 stochastic gradient descent, where in each optimization round, we select a node u in S
 and v not in S at random, switch them, and accept the switch if evaluation of the
