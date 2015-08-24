@@ -95,9 +95,10 @@ keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 3
   igraph::V(g)[which(s>0)]
 }
 
-#' Valente's bridging vertex measure.
+#' Valente's Bridging vertex measure.
 #'
-#' A node's bridging score is the average decrease in cohesiveness if each of
+#' Edges that reduces distances in a network are important structural bridges. Here we implement Valente and Fujimoto's metric,
+#' where a node's bridging score is the average decrease in cohesiveness if each of
 #' its edges were removed from the graph.
 #' 
 #' @seealso \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
