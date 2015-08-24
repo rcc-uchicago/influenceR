@@ -1,5 +1,5 @@
 Package: influenceR
-Title: Algorithms to quantify structural importance of nodes in a network
+Title: Software tools to quantify structural importance of nodes in a network
 Version: 0.0.0.9000
 Authors@R: as.person(c(
     "Simon Jacobs <sdjacobs@uchicago.edu> [aut]", 
