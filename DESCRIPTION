@@ -1,20 +1,18 @@
 Package: influenceR
-Title: Compute Node Significance Measures on Networks
+Title: Algorithms to quantify structural importance of nodes in a network
 Version: 0.0.0.9000
 Authors@R: as.person(c(
     "Simon Jacobs <sdjacobs@uchicago.edu> [aut]", 
-    "Aditya Khanna <khanna7@uchicago.edu> [cre]"
+    "Aditya Khanna <khanna7@uchicago.edu> [aut, cre]"
   ))
-Description: Compute various node significance measures on networks. This
-    package extends the functionality of the igraph package. We provide a
-    wrapper around igraph's "evcent" function for computing eigencentrality; an
-    alternate implementation of betweenness which utilizes Madduri and Bader's
-    SNAP library; and implementations of Burt's constraint and effective
-    network size metrics, Borgatti's Key Players algorithm, and Valente's
+Description: This package provides functionality to compute various node centrality measures on networks.
+    Included here are functions to compute betweenness centrality (by utilizing Madduri and Bader's
+    SNAP library), implementations of Burt's constraint and effective
+    network size (ENS) metrics, Borgatti's algorithm to identify key players, and Valente's
     bridging metric. The betweenness and Key Players implementation are
     parallelized with OpenMP, which may run faster on systems which have OpenMP
     configured. Optionally, the package can be compiled with MPI, if available
-    on your system: The bridging implementation can make use of MPI to spread
+    on your system. The bridging implementation can make use of MPI to spread
     the computation across multiple CPUs.
 Depends: R (>= 3.1.2)
 License: GPL-2
