@@ -2,7 +2,9 @@
 % Please edit documentation in R/graph_metrics.R
 \name{ens}
 \alias{ens}
-\title{Burt's effective network size vertex measure.}
+\title{Burt's Effective Network Size and Constraint index.
+The next two functions below provide ways to measure the actors' access to structural holes in a network. Structural holes
+"provide opportunities to broker connections between people" (Burt 2008).}
 \usage{
 ens(g)
 }
@@ -13,6 +15,11 @@ ens(g)
 A numeric vector with the effective network size for each vertex
 }
 \description{
-Burt's effective network size vertex measure.
+Burt's Effective Network Size and Constraint index.
+The next two functions below provide ways to measure the actors' access to structural holes in a network. Structural holes
+"provide opportunities to broker connections between people" (Burt 2008).
+}
+\seealso{
+\url{http://faculty.chicagobooth.edu/ronald.burt/research/files/NNappB.pdf}
 }
 

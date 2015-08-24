@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_metrics.R
 \name{betweenness}
 \alias{betweenness}
-\title{Vertex betweenness centrality measure.}
+\title{Vertex Betweenness centrality measure.}
 \usage{
 betweenness(g, snap = T)
 }
@@ -15,7 +15,7 @@ betweenness(g, snap = T)
 A numeric vector with the betweenness centrality score for each vertex
 }
 \description{
-The betweenness centrality score of a node u is the sum over all pairs s,t of the
+The Betweenness centrality score of a node u is the sum over all pairs s,t of the
 proportion of shortest paths between s and t that pass through u. This
 function allows the use of either the SNAP betweenness implementation (default), or
 the igraph betweenness function. The SNAP version makes use of OpenMP for

@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_metrics.R
 \name{bridging}
 \alias{bridging}
-\title{Valente's bridging vertex measure.}
+\title{Valente's Bridging vertex measure.}
 \usage{
 bridging(g)
 }
@@ -13,7 +13,8 @@ bridging(g)
 A numeric vector with the bridging score for each vertex
 }
 \description{
-A node's bridging score is the average decrease in cohesiveness if each of
+Edges that reduces distances in a network are important structural bridges. Here we implement Valente and Fujimoto's metric,
+where a node's bridging score is the average decrease in cohesiveness if each of
 its edges were removed from the graph.
 }
 \seealso{

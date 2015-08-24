@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_metrics.R
 \name{constraint}
 \alias{constraint}
-\title{Burt's graph constraint vertex measure.}
+\title{Burt's Constraint Index.}
 \usage{
 constraint(g, v = igraph::V(g))
 }
@@ -15,7 +15,6 @@ constraint(g, v = igraph::V(g))
 A numeric vector with the constraint score for each vertex in v
 }
 \description{
-This is an alternative to the implementation of Burt's consraint in the
-igraph package.
+The igraph package provides an implementation of Constraint; this is an alternate implementation.
 }
 

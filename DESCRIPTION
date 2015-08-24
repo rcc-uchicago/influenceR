@@ -1,6 +1,6 @@
 Package: influenceR
 Title: Software tools to quantify structural importance of nodes in a network
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: as.person(c(
     "Simon Jacobs <sdjacobs@uchicago.edu> [aut]", 
     "Aditya Khanna <khanna7@uchicago.edu> [aut, cre]"
@@ -9,11 +9,9 @@ Description: This package provides functionality to compute various node central
     Included here are functions to compute betweenness centrality (by utilizing Madduri and Bader's
     SNAP library), implementations of Burt's constraint and effective
     network size (ENS) metrics, Borgatti's algorithm to identify key players, and Valente's
-    bridging metric. The betweenness and Key Players implementation are
+    bridging metric. The betweenness, Key Players, and bridging implementations are
     parallelized with OpenMP, which may run faster on systems which have OpenMP
-    configured. Optionally, the package can be compiled with MPI, if available
-    on your system. The bridging implementation can make use of MPI to spread
-    the computation across multiple CPUs.
+    configured.
 Depends: R (>= 3.1.2)
 License: GPL-2
 LazyData: true
@@ -23,5 +21,5 @@ Imports:
 NeedsCompilation: yes
 Suggests:
     testthat
-URL: https://github.com/rcc-uchicago/hiv-social-networks
+URL: https://github.com/rcc-uchicago/influenceR
 
