@@ -10,16 +10,6 @@
 #include "vertex_betweenness_centrality.h"
 #include "prefix_sums.h"
 
-/*
- There is a bug in the SNAP betweenness code on the Win64 platform with OpenMP. 
-*/
-#ifdef _OPENMP
-#define _OPENMP_BTWN _OPENMP
-#ifdef WIN64
-#undef _OPENMP_BTWN
-#endif
-#endif
-
 /* 
  The following macros allow the use of R print functions and RNG functions without
  major changes to the SNAP code. Specifically, fprintf is replaced by REprintf, and
@@ -32,7 +22,7 @@
 */
 #include <R.h>
 #define SPRNG_DEFAULT 0
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 #define init_sprng(a, b, c, d, e) NULL; omp_set_lock(&rnglock); GetRNGstate(); omp_unset_lock(&rnglock)
 #define free_sprng(a) omp_set_lock(&rnglock); PutRNGstate(); omp_unset_lock(&rnglock)
 #else
@@ -45,7 +35,7 @@
 
 void vertex_betweenness_centrality_parBFS(graph_t* G, double* BC, long numSrcs) {
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
     omp_lock_t rnglock;
     omp_init_lock(&rnglock);
 #endif
@@ -66,7 +56,7 @@ void vertex_betweenness_centrality_parBFS(graph_t* G, double* BC, long numSrcs) 
     long MAX_NUM_PHASES;
     attr_id_t *psCount;
 
-#ifdef _OPENMP_BTWN    
+#ifdef _OPENMP    
     omp_lock_t* vLock;
     long chunkSize;
 #endif
@@ -75,7 +65,7 @@ void vertex_betweenness_centrality_parBFS(graph_t* G, double* BC, long numSrcs) 
 #endif
     int seed = 2387;
 
-#ifdef _OPENMP_BTWN    
+#ifdef _OPENMP    
 OMP("omp parallel firstprivate(G)")
     {
 #endif
@@ -93,7 +83,7 @@ OMP("omp parallel firstprivate(G)")
         double elapsed_time_part;
 #endif
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
         int myLock;
         tid = omp_get_thread_num();
         nthreads = omp_get_num_threads();
@@ -119,12 +109,12 @@ OMP("omp parallel firstprivate(G)")
 #if RANDSRCS
             Srcs = (attr_id_t *) malloc(n*sizeof(attr_id_t));
 #endif
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             vLock = (omp_lock_t *) malloc(n*sizeof(omp_lock_t));
 #endif
         }
 
-#ifdef _OPENMP_BTWN   
+#ifdef _OPENMP   
 OMP("omp barrier")
 OMP("omp for")
         for (i=0; i<n; i++) {
@@ -136,20 +126,20 @@ OMP("omp for")
         stream = init_sprng(0, tid, nthreads, seed, SPRNG_DEFAULT);
 
 #if RANDSRCS
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp for")
 #endif
         for (i=0; i<n; i++) {
             Srcs[i] = i;
         }
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp for")
 #endif
         for (i=0; i<n; i++) {
             j = n * sprng(stream);
             if (i != j) {
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
                 int l1 = omp_test_lock(&vLock[i]);
                 if (l1) {
                     int l2 = omp_test_lock(&vLock[j]);
@@ -158,7 +148,7 @@ OMP("omp for")
                         k = Srcs[i];
                         Srcs[i] = Srcs[j];
                         Srcs[j] = k;
-#ifdef _OPENMP_BTWN  
+#ifdef _OPENMP  
                         omp_unset_lock(&vLock[j]);
                     }
                     omp_unset_lock(&vLock[i]);
@@ -168,7 +158,7 @@ OMP("omp for")
         } 
 #endif
 
-#ifdef _OPENMP_BTWN    
+#ifdef _OPENMP    
 OMP("omp barrier")
 #endif
 
@@ -176,7 +166,7 @@ OMP("omp barrier")
             MAX_NUM_PHASES = 500;
         }
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 #endif
 
@@ -193,17 +183,17 @@ OMP("omp barrier")
             pSums = (attr_id_t *) malloc(nthreads*sizeof(attr_id_t));
         }
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 OMP("omp for")
 #endif
         for (i=0; i<m; i++) {
             v = G->endV[i];
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             omp_set_lock(&vLock[v]);
 #endif
             in_degree[v]++;
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             omp_unset_lock(&vLock[v]);
 #endif
         }
@@ -214,7 +204,7 @@ OMP("omp for")
             pListMem = (attr_id_t *) malloc(m*sizeof(attr_id_t));
         }
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 OMP("omp for")
 #endif
@@ -255,11 +245,11 @@ OMP("omp for")
         num_traversals = 0;
         myCount = 0;
 
-#ifdef _OPENMP_BTWN    
+#ifdef _OPENMP    
 OMP("omp barrier")
 #endif
 
-#ifdef _OPENMP_BTWN    
+#ifdef _OPENMP    
 OMP("omp for")
 #endif
         for (i=0; i<n; i++) {
@@ -302,7 +292,7 @@ OMP("omp for")
             count = 1;
             phase_num = 0;
 
-#ifdef _OPENMP_BTWN       
+#ifdef _OPENMP       
 OMP("omp barrier")
 #endif
 
@@ -311,7 +301,7 @@ OMP("omp barrier")
                 myCount = 0;
                 start_iter = start[phase_num];
                 end_iter = end[phase_num];
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 OMP("omp for schedule(dynamic) nowait")
 #endif
@@ -322,7 +312,7 @@ OMP("omp for schedule(dynamic) nowait")
                         w = G->endV[j];
                         if (v != w) {
 
-#ifdef _OPENMP_BTWN                            
+#ifdef _OPENMP                            
                             myLock = omp_test_lock(&vLock[w]);
                             if (myLock) { 
 #endif             
@@ -346,7 +336,7 @@ OMP("omp for schedule(dynamic) nowait")
                                     sig[w] += sig[v];
                                     P[w].list[P[w].count++] = v;
                                 }
-#ifdef _OPENMP_BTWN  
+#ifdef _OPENMP  
 
                                 omp_unset_lock(&vLock[w]);
                             } else {
@@ -377,7 +367,7 @@ OMP("omp for schedule(dynamic) nowait")
 
                 psCount[tid+1] = myCount;
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 #endif
 
@@ -392,7 +382,7 @@ OMP("omp barrier")
 
 
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 #endif
 
@@ -410,18 +400,18 @@ OMP("omp barrier")
             while (phase_num > 0) {
                 start_iter = start[phase_num];
                 end_iter = end[phase_num];
-#ifdef _OPENMP_BTWN        
+#ifdef _OPENMP        
 OMP("omp for schedule(static) nowait")
 #endif
                 for (j=start_iter; j<end_iter; j++) {
                     w = S[j];
                     for (k = 0; k<P[w].count; k++) {
                         v = P[w].list[k];
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
                         omp_set_lock(&vLock[v]);
 #endif
                         del[v] = del[v] + sig[v]*(1+del[w])/sig[w];
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
                         omp_unset_lock(&vLock[v]);
 #endif
                     }
@@ -430,13 +420,13 @@ OMP("omp for schedule(static) nowait")
 
                 phase_num--;
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 #endif            
             }
 
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             chunkSize = n/nthreads;
 OMP("omp for schedule(static, chunkSize) nowait")
 #endif
@@ -448,7 +438,7 @@ OMP("omp for schedule(static, chunkSize) nowait")
             }
 
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 #endif
 
@@ -463,11 +453,11 @@ OMP("omp barrier")
 #endif
 
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 #endif
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp for")
         for (i=0; i<n; i++) {
             omp_destroy_lock(&vLock[i]);
@@ -483,7 +473,7 @@ OMP("omp for")
             free(sig);
             free(d);
             free(del);
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             free(vLock);
 #endif
             free(start);
@@ -501,7 +491,7 @@ OMP("omp for")
         }
 
         free_sprng(stream);
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
     }    
 #endif
 
@@ -509,7 +499,7 @@ OMP("omp for")
 
 void vertex_betweenness_centrality_simple(graph_t* G, double* BC, long numSrcs) {
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
     omp_lock_t rnglock;
     omp_init_lock(&rnglock);
 #endif
@@ -519,7 +509,7 @@ void vertex_betweenness_centrality_simple(graph_t* G, double* BC, long numSrcs) 
     attr_id_t* Srcs; 
 #endif
     long num_traversals = 0;
-#ifdef _OPENMP_BTWN    
+#ifdef _OPENMP    
     omp_lock_t* vLock;
     long chunkSize;
 #endif
@@ -530,7 +520,7 @@ void vertex_betweenness_centrality_simple(graph_t* G, double* BC, long numSrcs) 
 
     /* The outer loop is parallelized in this case. Each thread does a BFS 
        and the vertex BC values are incremented atomically */   
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp parallel firstprivate(G)")
     {
 #endif
@@ -555,7 +545,7 @@ OMP("omp parallel firstprivate(G)")
         double elapsed_time_part;
 #endif
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
         int myLock;
         tid = omp_get_thread_num();
         nthreads = omp_get_num_threads();
@@ -581,12 +571,12 @@ OMP("omp parallel firstprivate(G)")
 #if RANDSRCS
             Srcs = (attr_id_t *) malloc(n*sizeof(attr_id_t));
 #endif
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             vLock = (omp_lock_t *) malloc(n*sizeof(omp_lock_t));
 #endif
         }
 
-#ifdef _OPENMP_BTWN   
+#ifdef _OPENMP   
 OMP("omp barrier")
 OMP("omp for")
         for (i=0; i<n; i++) {
@@ -598,20 +588,20 @@ OMP("omp for")
         stream = init_sprng(0, tid, nthreads, seed, SPRNG_DEFAULT);
 
 #if RANDSRCS
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp for")
 #endif
         for (i=0; i<n; i++) {
             Srcs[i] = i;
         }
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp for")
 #endif
         for (i=0; i<n; i++) {
             j = n * sprng(stream);
             if (i != j) {
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
                 int l1 = omp_test_lock(&vLock[i]);
                 if (l1) {
                     int l2 = omp_test_lock(&vLock[j]);
@@ -620,7 +610,7 @@ OMP("omp for")
                         k = Srcs[i];
                         Srcs[i] = Srcs[j];
                         Srcs[j] = k;
-#ifdef _OPENMP_BTWN  
+#ifdef _OPENMP  
                         omp_unset_lock(&vLock[j]);
                     }
                     omp_unset_lock(&vLock[i]);
@@ -630,7 +620,7 @@ OMP("omp for")
         } 
 #endif
 
-#ifdef _OPENMP_BTWN    
+#ifdef _OPENMP    
 OMP("omp barrier")
 #endif
 
@@ -649,17 +639,17 @@ OMP("omp barrier")
         }
 
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 OMP("omp for")
 #endif
         for (i=0; i<m; i++) {
             v = G->endV[i];
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             omp_set_lock(&vLock[v]);
 #endif
             in_degree[v]++;
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             omp_unset_lock(&vLock[v]);
 #endif
         }
@@ -684,7 +674,7 @@ OMP("omp for")
         }
 #endif
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 #endif
 
@@ -703,7 +693,7 @@ OMP("omp barrier")
         start = (attr_id_t *) malloc(MAX_NUM_PHASES*sizeof(attr_id_t));
         end = (attr_id_t *) malloc(MAX_NUM_PHASES*sizeof(attr_id_t));
 
-#ifdef _OPENMP_BTWN   
+#ifdef _OPENMP   
 OMP("omp barrier")
 #endif
 
@@ -720,7 +710,7 @@ OMP("omp barrier")
         }
 #endif
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp for reduction(+:num_traversals)")
 #endif
         for (p=0; p<numV; p++) {
@@ -780,7 +770,7 @@ OMP("omp for reduction(+:num_traversals)")
                         v = P[w].list[k];
                         del[v] = del[v] + sig[v]*(1+del[w])/sig[w];
                     }
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
                     omp_set_lock(&vLock[w]);
                     BC[w] += del[w];
                     omp_unset_lock(&vLock[w]);
@@ -810,11 +800,11 @@ OMP("omp for reduction(+:num_traversals)")
 #endif
 
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
 #endif
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp for")
         for (i=0; i<n; i++) {
             omp_destroy_lock(&vLock[i]);
@@ -832,7 +822,7 @@ OMP("omp for")
 
         if (tid == 0) {
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
             free(vLock);
 #endif
 
@@ -849,7 +839,7 @@ OMP("omp for")
 
         free_sprng(stream);
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
 OMP("omp barrier")
     }
 #endif
@@ -858,7 +848,7 @@ OMP("omp barrier")
 
 void vertex_betweenness_centrality(graph_t* G, double* BC, long numSrcs) {
 
-#ifdef _OPENMP_BTWN
+#ifdef _OPENMP
     /* Exact BC */
     if (G->n == numSrcs) {
         if (G->n < 5000) {
