@@ -12,7 +12,7 @@ Description: This package provides functionality to compute various node central
     bridging metric. The betweenness, Key Players, and bridging implementations are
     parallelized with OpenMP, which may run faster on systems which have OpenMP
     configured.
-Depends: R (>= 3.1.2)
+Depends: R (>= 3.2.0)
 License: GPL-2
 LazyData: true
 Imports: 
