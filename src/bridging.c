@@ -220,8 +220,6 @@ double *bridging_MPI(graph_t *G, int *edgelist, double *scores)
 
 double bridging_vertex_precomp(graph_t *G, long v, double cls, double *closeness) {
 
-  int n = G->n;
-
   int degree = 0;
   double sum = 0;
 

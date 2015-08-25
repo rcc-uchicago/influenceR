@@ -1,6 +1,6 @@
 Package: influenceR
 Title: Software tools to quantify structural importance of nodes in a network
-Version: 1.0.0
+Version: 0.1.0
 Authors@R: as.person(c(
     "Simon Jacobs <sdjacobs@uchicago.edu> [aut]", 
     "Aditya Khanna <khanna7@uchicago.edu> [aut, cre]"
@@ -16,7 +16,7 @@ Depends: R (>= 3.1.2)
 License: GPL-2
 LazyData: true
 Imports: 
-    igraph (>= 0.7.1),
+    igraph (>= 1.0.1),
     Matrix (>= 1.1-4)
 NeedsCompilation: yes
 Suggests:
