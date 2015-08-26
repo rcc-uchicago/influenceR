@@ -1,3 +1,4 @@
+
 #' influenceR: Software tools to quantify structural importance of nodes in a network.
 #'
 #' The influenceR package includes functions to quantify the structural
@@ -20,5 +21,6 @@
 #'
 #' @docType package
 #' @name influenceR
+#' @useDynLib influenceR
 NULL
 #> NULL
