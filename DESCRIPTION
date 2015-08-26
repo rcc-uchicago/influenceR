@@ -2,8 +2,8 @@ Package: influenceR
 Title: Software tools to quantify structural importance of nodes in a network
 Version: 0.1.0
 Authors@R: as.person(c(
-    "Simon Jacobs <sdjacobs@uchicago.edu> [aut]", 
-    "Aditya Khanna <khanna7@uchicago.edu> [aut, cre]"
+    "Simon Jacobs <sdjacobs@uchicago.edu> [aut, cre]", 
+    "Aditya Khanna <khanna7@uchicago.edu> [aut]"
   ))
 Description: This package provides functionality to compute various node centrality measures on networks.
     Included here are functions to compute betweenness centrality (by utilizing Madduri and Bader's
