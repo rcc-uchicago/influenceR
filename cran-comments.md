@@ -1,3 +1,6 @@
+## Note
+This is the first release of influenceR.
+
 ## Test environments
 * local OS X install, R 3.2.0
 * Scientific Linux 6, R 3.2.1
