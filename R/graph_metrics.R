@@ -12,7 +12,7 @@
 #' 
 #' @export
 csv.to.igraph <- function(fname) {
-    x <- read.csv(fname) # this may be dangerous because of users' settings.
+    x <- utils::read.csv(fname) # this may be dangerous because of users' settings.
                          # See: http://r-pkgs.had.co.nz/r.html
     el <- as.matrix(x[c(1,2)])
     if(!is.character(el))
@@ -160,7 +160,7 @@ constraint <- function(g, v=igraph::V(g)) {
   }
   
   process_sparse <- function(A, Ai, deg) {
-    M <- as(A, 'TsparseMatrix')
+    M <- methods::as(A, 'TsparseMatrix')
     x <- .Call("process_sparse_R", M@i, M@j, M@x, Ai, deg, Matrix::nnzero(M), PACKAGE = "influenceR")
     M@x <- x
     M

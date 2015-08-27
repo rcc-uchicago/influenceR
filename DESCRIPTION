@@ -1,10 +1,9 @@
 Package: influenceR
 Title: Software Tools to Quantify Structural Importance of Nodes in a Network
 Version: 0.1.0
-Authors@R: person(c(
-    "Simon Jacobs <sdjacobs@uchicago.edu> [aut]", 
-    "Aditya Khanna <khanna7@uchicago.edu> [aut, cre]"
-  ))
+Authors@R: c(
+    person("Jacobs", "Simon", email = "sdjacobs@uchicago.edu", role = "aut"),
+    person("Khanna", "Aditya", email = "khanna7@uchicago.edu", role = c("aut", "cre")))
 Description: Provides functionality to compute various node centrality measures on networks.
     Included are functions to compute betweenness centrality (by utilizing Madduri and Bader's
     SNAP library), implementations of Burt's constraint and effective
@@ -17,7 +16,9 @@ License: GPL-2
 LazyData: true
 Imports: 
     igraph (>= 1.0.1),
-    Matrix (>= 1.1-4)
+    Matrix (>= 1.1-4),
+    methods,
+    utils
 NeedsCompilation: yes
 Suggests:
     testthat
