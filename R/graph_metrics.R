@@ -56,11 +56,6 @@ betweenness <- function(g, snap=T) {
   vals
 }
 
-#' @examples
-#' ex.edges <- c(1,2, 3,4, 5,7, 4,6, 8,10, 9,10)
-#' ig.ex <- make_undirected_graph(ex.edges, n = max(edges))
-#' betweenness(ig.ex)
-
 #' Compute a KPP-Pos set for a given graph.
 #'
 #' The "Key Player" family of node importance algorithms (Borgatti 2006) involves the selection
@@ -106,7 +101,7 @@ keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 3
 #' where a node's bridging score is the average decrease in cohesiveness if each of
 #' its edges were removed from the graph.
 #' 
-#' @reference \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
+#' @references \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
 #'
 #' @param g The igraph object to analyze.
 #' @return A numeric vector with the bridging score for each vertex
@@ -200,3 +195,7 @@ constraint <- function(g, v=igraph::V(g)) {
 #' ex.edges <- c(1,2, 3,4, 5,7, 4,6, 8,10, 9,10)
 #' ig.ex <- make_undirected_graph(ex.edges, n = max(edges))
 #' betweenness(ig.ex)
+#' keyplayer(ig.ex, k=3)
+#' bridging(ig.ex)
+#' constraint(ig.ex)
+#' ens(ig.ex)
