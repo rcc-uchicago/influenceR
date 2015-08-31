@@ -56,6 +56,11 @@ betweenness <- function(g, snap=T) {
   vals
 }
 
+#' @examples
+#' ex.edges <- c(1,2, 3,4, 5,7, 4,6, 8,10, 9,10)
+#' ig.ex <- make_undirected_graph(ex.edges, n = max(edges))
+#' betweenness(ig.ex)
+
 #' Compute a KPP-Pos set for a given graph.
 #'
 #' The "Key Player" family of node importance algorithms (Borgatti 2006) involves the selection
