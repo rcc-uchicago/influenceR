@@ -29,7 +29,7 @@ csv.to.igraph <- function(fname) {
 #' the igraph betweenness function. The SNAP version makes use of OpenMP for 
 #' parallelization, and may be faster in some circumstances.
 #'
-#' @seealso \url{http://snap-graph.sourceforge.net/}
+#' @references \url{http://snap-graph.sourceforge.net/}
 #'
 #' @param g The igraph object to analyze
 #' @param snap True to use the SNAP betweenness code, False to use igraph::betweenness
@@ -70,7 +70,7 @@ betweenness <- function(g, snap=T) {
 #' multiple workers can explore the solution space in parallel, synchronizing to pick the best
 #' answer after a given computation budget has elapsed.
 #'
-#' @seealso \url{http://www.bebr.ufl.edu/sites/default/files/Borgatti\%20-\%202006\%20-\%20Identifying\%20sets\%20of\%20key\%20players\%20in\%20a\%20social\%20networ.pdf}
+#' @references \url{http://www.bebr.ufl.edu/sites/default/files/Borgatti\%20-\%202006\%20-\%20Identifying\%20sets\%20of\%20key\%20players\%20in\%20a\%20social\%20networ.pdf}
 #'
 #' @param g The igraph object to analyze.
 #' @param k The size of the KP-set
@@ -101,7 +101,7 @@ keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 3
 #' where a node's bridging score is the average decrease in cohesiveness if each of
 #' its edges were removed from the graph.
 #' 
-#' @seealso \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
+#' @reference \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
 #'
 #' @param g The igraph object to analyze.
 #' @return A numeric vector with the bridging score for each vertex
@@ -128,7 +128,7 @@ bridging <- function(g) {
 #' @param g The igraph object to analyze.
 #' @return A numeric vector with the effective network size for each vertex
 #'
-#' @seealso \url{http://faculty.chicagobooth.edu/ronald.burt/research/files/NNappB.pdf}
+#' @references \url{http://faculty.chicagobooth.edu/ronald.burt/research/files/NNappB.pdf}
 #' @export
 ens <- function(g) {
   if (!igraph::is_igraph(g)) {
