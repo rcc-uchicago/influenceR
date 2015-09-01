@@ -20,7 +20,11 @@
 #include "keyplayer-utils.h"
 
 /* single core version: compute better solutions for T seconds */
-void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxsec, int *KP)
+/* Return code:
+ * 0 if converges
+ * 1 if does not converge 
+*/
+int keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxsec, int *KP)
 {
 	
   int np, rank, new_rank = 0, stop;
@@ -36,7 +40,8 @@ void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxse
   problem.distance = NULL;
   problem.round = 0;
   
-  double fit;
+  double fit, oldfit=-1;
+  int ret = 1;
 
 	int s[n];
 	gen_starting_set(n, k, s);
@@ -51,13 +56,19 @@ void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxse
 			s[u] = 0;
 		if (v >= 0)
 			s[v] = 1;
+		
+		if (fit - oldfit < tol) {
+		  int ret = 0;
+		  break;
+		}
+		oldfit = fit;
 	} while(difftime(time(0), start) < maxsec);
   
   for (int i = 0; i < n; i++)
     KP[i] = s[i];
   
   PutRNGstate();
-	return;	
+	return ret;	
 }
 
 /* While we're working:
@@ -65,24 +76,25 @@ void keyplayer_driver(graph_t *g, int n, int k, double p, double tol, long maxse
 	 * send my fit back to the master process.
 	 * get a number back. if it's my rank, broadcast my s array to everyone! 
 */
-void keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long maxsec, long sec, int *KP)
+int keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long maxsec, long sec, int *KP)
 {
-#ifndef OPENMP
- keyplayer_driver(g, n, k, p, tol, maxsec, KP);
+#ifndef _OPENMP
+ int ret = keyplayer_driver(g, n, k, p, tol, maxsec, KP);
 #else
   int np, rank, new_rank = 0, stop;
 
   double *fits;
   int *allsets;
   time_t start, fullstart;
+  int ret = 1;
 
+  GetRNGstate(); // instead of srand
+  
 #pragma omp parallel shared(fits, allsets, new_rank, g, np, stop) private(rank, start, fullstart)
   {
     
     np =  omp_get_num_threads();
     rank = omp_get_thread_num();
-    
-    GetRNGState();
     
     if (rank == 0) {
       allsets = (int *) R_alloc(n * np, sizeof(int));
@@ -140,6 +152,7 @@ void keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long m
   			}
   			if (max - oldfit < tol || (difftime(time(0), fullstart) > maxsec)) {
   				stop = 1;
+  			  ret = !(max - oldfit < tol); // 0 if we converges
   			}
   			oldfit = max;
   		}
@@ -166,4 +179,6 @@ void keyplayer_driver_omp(graph_t *g, int n, int k, double p, double tol, long m
   
   PutRNGstate();
 #endif
+  
+  return ret;
 }

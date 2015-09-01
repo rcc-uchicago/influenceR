@@ -92,7 +92,7 @@ betweenness <- function(g, snap=T) {
 #' keyplayer(ig.ex, k=10, maxsec=2) # key-player set consisting of 10 actors
 #'
 #' @export
-keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 30) {
+keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 120, roundsec = 30) {
   if (!igraph::is_igraph(g)) {
     stop("Not a graph object")
   }
@@ -101,7 +101,12 @@ keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 3
   n <- as.integer(max(el))
   m <- as.integer(length(el)/2)
 
-  s <- .Call("snap_keyplayer_R", el_i, n, m, as.integer(k), prob, tol, as.integer(maxsec), as.integer(roundsec), PACKAGE="influenceR")
+  converges <- vector("integer", 1) # just allocate space for an integer
+
+  s <- .Call("snap_keyplayer_R", el_i, n, m, as.integer(k), prob, tol, as.integer(maxsec), as.integer(roundsec), converges, PACKAGE="influenceR")
+  
+  if (converges == 1)
+    warning("keyplayer: optimization does not converge")
   
   igraph::V(g)[which(s>0)]
 }

@@ -178,7 +178,7 @@ SEXP snap_betweenness_R(SEXP sE, SEXP sn, SEXP sm)
   return sBC;
 }
 
-SEXP snap_keyplayer_R(SEXP sE, SEXP sn, SEXP sm, SEXP sk, SEXP sprob, SEXP stol, SEXP sMaxsec, SEXP sRoundsec) {
+SEXP snap_keyplayer_R(SEXP sE, SEXP sn, SEXP sm, SEXP sk, SEXP sprob, SEXP stol, SEXP sMaxsec, SEXP sRoundsec, SEXP cvg) {
   int n = INTEGER(sn)[0],
     m = INTEGER(sm)[0],
     k = INTEGER(sk)[0];
@@ -197,12 +197,14 @@ SEXP snap_keyplayer_R(SEXP sE, SEXP sn, SEXP sm, SEXP sk, SEXP sprob, SEXP stol,
   SEXP sKP = PROTECT(allocVector(INTSXP, n));
   int *KP = INTEGER(sKP);
 
-#ifdef OPENMP
-  keyplayer_driver_omp(&G, n, k, prob, tol, maxsec, roundsec, KP);
+#ifdef _OPENMP
+  int ret = keyplayer_driver_omp(&G, n, k, prob, tol, maxsec, roundsec, KP);
 #else
-  keyplayer_driver(&G, n, k, prob, tol, maxsec, KP);
+  int ret = keyplayer_driver(&G, n, k, prob, tol, maxsec, KP);
 #endif
   
+  /* did it converge? */
+  INTEGER(cvg)[0] = ret;
   
   UNPROTECT(1);
  
