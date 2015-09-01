@@ -89,7 +89,7 @@ betweenness <- function(g, snap=T) {
 #'
 #' @examples
 #' ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
-#' keyplayer(ig.ex, k=10, roundsec=1, maxsec=2) # key-player set consisting of 10 actors
+#' keyplayer(ig.ex, k=10, maxsec=2) # key-player set consisting of 10 actors
 #'
 #' @export
 keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 30) {
