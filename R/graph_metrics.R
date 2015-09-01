@@ -192,10 +192,9 @@ constraint <- function(g, v=igraph::V(g)) {
 }
 
 #' @examples
-#' ex.edges <- c(1,2, 3,4, 5,7, 4,6, 8,10, 9,10)
-#' ig.ex <- make_undirected_graph(ex.edges, n = max(edges))
-#' betweenness(ig.ex)
-#' keyplayer(ig.ex, k=3)
-#' bridging(ig.ex)
-#' constraint(ig.ex)
-#' ens(ig.ex)
+#' ig.ex <- erdos.renyi.game(100, p.or.m=0.3) #generate an undirected 'igraph' object
+#' betweenness(ig.ex) #betweenness scores for each node in the graph
+#' keyplayer(ig.ex, k=10) #key-player set consisting of 10 actors
+#' bridging(ig.ex) #bridging scores for each node in the graph
+#' constraint(ig.ex) #constraint index for each node in the graph
+#' ens(ig.ex) #effective network size for each node in the graph
