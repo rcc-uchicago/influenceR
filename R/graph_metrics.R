@@ -75,7 +75,7 @@ betweenness <- function(g, snap=T) {
 #' optimize resource diffusion through the network. We sum over all vertices
 #' not in S the reciprocal of the shortest distance to a vertex in S.
 #' 
-#' Borgatti claims that a number of off-the-shelf optimization algorithms may
+#' According to Borgatti, a number of off-the-shelf optimization algorithms may
 #' be suitable to find S, such as tabu-search, K-L, simulated annealing, or
 #' genetic algorithms. He presents a simple greedy algorithm, which we excerpt
 #' here:
@@ -93,7 +93,7 @@ betweenness <- function(g, snap=T) {
 #'    \item Go to step 3.
 #' }
 #' 
-#' This implementation uses a different optimization method which we call
+#' Our implementation uses a different optimization method which we call
 #' stochastic gradient descent. In tests on real world data, we found that
 #' our method discovered sets S with larger fits in less computation time.
 #' The algorithm is as follows:
