@@ -65,17 +65,55 @@ betweenness <- function(g, snap=T) {
 
 #' Compute a KPP-Pos set for a given graph.
 #'
+#' @description 
 #' The "Key Player" family of node importance algorithms (Borgatti 2006) involves the selection
 #' of a metric of node importance and a combinatorial optimization strategy to
-#' choose the set S of vertices of size k that maximize that metric. This
-#' function implements KPP-Pos, an algorithm to to identify |S| actors that optimize information diffusion
-#' through the network. We sum over all vertices not in S the reciprocal
-#' of the shortest distance to a vertex in S. For combinatorial optimization, we use
-#' stochastic gradient descent, where in each optimization round, we select a node u in S
-#' and v not in S at random, switch them, and accept the switch if evaluation of the
-#' metric improves. This implementation uses OpenMP (if available on the host system) so that
-#' multiple workers can explore the solution space in parallel, synchronizing to pick the best
-#' answer after a given computation budget has elapsed.
+#' choose the set S of vertices of size k that maximize that metric.
+#' 
+#' @details 
+#' This function implements KPP-Pos, a metric intended to identify k nodes which
+#' optimize resource diffusion through the network. We sum over all vertices
+#' not in S the reciprocal of the shortest distance to a vertex in S.
+#' 
+#' Borgatti claims that a number of off-the-shelf optimization algorithms may
+#' be suitable to find S, such as tabu-search, K-L, simulated annealing, or
+#' genetic algorithms. He presents a simple greedy algorithm, which we excerpt
+#' here:
+#' 
+#'  \enumerate{
+#'    \item Select k nodes at random to populate set S
+#'    \item Set F = fit using appropriate key player metric.
+#'    \item For each node u in S and each node v not in S:
+#'      \itemize{\item DELTAF = improvement in fit if u and v were swapped}
+#'    \item Select pair with largest DELTAF
+#'      \itemize{
+#'        \item If DELTAF <= [tolerance] then terminate
+#'        \item Else, swap pair with greatest improvement in fit and set F = F + DELTAF
+#'      }
+#'    \item Go to step 3.
+#' }
+#' 
+#' This implementation uses a different optimization method which we call
+#' stochastic gradient descent. In tests on real world data, we found that
+#' our method discovered sets S with larger fits in less computation time.
+#' The algorithm is as follows:
+#' 
+#' \enumerate{
+#'  \item Select k nodes at random to populate set S
+#'  \item Set F = fit using appropriate key player metric (KPP-Pos in our case)
+#'  \item Get a new state:
+#'  \itemize{
+#'    \item Pick a random u in S and v not in S.
+#'    \item F' = fit if u and v were swapped
+#'    \item If F' > F, swap u and v in S. Else, repeat step 3. (Alternatively, if a positive value is given for the `prob' parameter, a swap will be accepted with a small probability regardless of whether it improves the fit).
+#'  }
+#'  \item If F' - F < tolerance or our maximum computation time is exceeded, return S. Else, go to step 3.
+#' }
+#'     
+#' This implementation uses OpenMP (if available on the host system) so that
+#' multiple workers can explore the solution space in parallel. After a given
+#' of time, the workers synchronize their sets S to the one which maximizes
+#' the metric.
 #'
 #' @references \url{http://www.bebr.ufl.edu/sites/default/files/Borgatti\%20-\%202006\%20-\%20Identifying\%20sets\%20of\%20key\%20players\%20in\%20a\%20social\%20networ.pdf}
 #'
@@ -89,13 +127,17 @@ betweenness <- function(g, snap=T) {
 #'
 #' @examples
 #' ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
-#' keyplayer(ig.ex, k=10, maxsec=2) # key-player set consisting of 10 actors
+#' keyplayer(ig.ex, k=10) # key-player set consisting of 10 actors
 #'
 #' @export
 keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 120, roundsec = 30) {
   if (!igraph::is_igraph(g)) {
     stop("Not a graph object")
   }
+  
+  if (roundsec > maxsec)
+    roundsec <- maxsec
+  
   el <- igraph::get.edgelist(g, names=F)
   el_i <- as.integer(t(el))
   n <- as.integer(max(el))
@@ -106,7 +148,7 @@ keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 120, roundsec = 3
   s <- .Call("snap_keyplayer_R", el_i, n, m, as.integer(k), prob, tol, as.integer(maxsec), as.integer(roundsec), converges, PACKAGE="influenceR")
   
   if (converges == 1)
-    warning("keyplayer: optimization does not converge")
+    warning("Maximum computation time (arg 'maxsec') exceeded!")
   
   igraph::V(g)[which(s>0)]
 }
