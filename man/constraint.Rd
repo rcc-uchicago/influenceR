@@ -17,4 +17,8 @@ A numeric vector with the constraint score for each vertex in v
 \description{
 The igraph package provides an implementation of Constraint; this is an alternate implementation.
 }
+\examples{
+ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
+constraint(ig.ex) # constraint scores for each node in the graph
+}
 

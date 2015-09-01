@@ -15,4 +15,7 @@ An igraph graph object built from the filename.
 \description{
 The first column should be sources, the second should be targets.
 }
+\examples{
+\dontrun{ig.csv <- csv.to.igraph("edgelist.csv") }
+}
 

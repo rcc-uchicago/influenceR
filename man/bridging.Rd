@@ -17,7 +17,11 @@ Edges that reduces distances in a network are important structural bridges. Here
 where a node's bridging score is the average decrease in cohesiveness if each of
 its edges were removed from the graph.
 }
-\seealso{
+\examples{
+ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
+bridging(ig.ex) # bridging scores for each node in the graph
+}
+\references{
 \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2889704/}
 }
 

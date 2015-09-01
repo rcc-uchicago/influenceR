@@ -10,6 +10,9 @@
 #' @param fname A filename
 #' @return An igraph graph object built from the filename.
 #' 
+#' @examples 
+#' \dontrun{ig.csv <- csv.to.igraph("edgelist.csv") }
+#' 
 #' @export
 csv.to.igraph <- function(fname) {
     x <- utils::read.csv(fname) # this may be dangerous because of users' settings.
@@ -34,6 +37,10 @@ csv.to.igraph <- function(fname) {
 #' @param g The igraph object to analyze
 #' @param snap True to use the SNAP betweenness code, False to use igraph::betweenness
 #' @return A numeric vector with the betweenness centrality score for each vertex
+#'
+#' @examples
+#' ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
+#' betweenness(ig.ex) # betweenness scores for each node in the graph
 #'
 #' @export
 betweenness <- function(g, snap=T) {
@@ -80,6 +87,10 @@ betweenness <- function(g, snap=T) {
 #' @param roundsec Number of seconds in between synchronizing workers' answer
 #' @return a vector with the vertex number of each vertex in the selected set S.
 #'
+#' @examples
+#' ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
+#' keyplayer(ig.ex, k=10, roundsec=1, maxsec=2) # key-player set consisting of 10 actors
+#'
 #' @export
 keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 30) {
   if (!igraph::is_igraph(g)) {
@@ -106,6 +117,10 @@ keyplayer <- function(g, k, prob = 0.0, tol = 0.0001, maxsec = 600, roundsec = 3
 #' @param g The igraph object to analyze.
 #' @return A numeric vector with the bridging score for each vertex
 #'
+#' @examples
+#' ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
+#' bridging(ig.ex) # bridging scores for each node in the graph
+#' 
 #' @export
 bridging <- function(g) {
   if (!igraph::is_igraph(g)) {
@@ -127,6 +142,10 @@ bridging <- function(g) {
 
 #' @param g The igraph object to analyze.
 #' @return A numeric vector with the effective network size for each vertex
+#'
+#' @examples
+#' ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
+#' ens(ig.ex) # Effective Network Size scores for each node in the graph
 #'
 #' @references \url{http://faculty.chicagobooth.edu/ronald.burt/research/files/NNappB.pdf}
 #' @export
@@ -152,6 +171,10 @@ ens <- function(g) {
 #' @param g The igraph object to analyze.
 #' @param v vertices over which to compute constraint (default to all)
 #' @return A numeric vector with the constraint score for each vertex in v
+#' 
+#' @examples
+#' ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
+#' constraint(ig.ex) # constraint scores for each node in the graph
 #'
 #' @export
 constraint <- function(g, v=igraph::V(g)) {
@@ -191,10 +214,3 @@ constraint <- function(g, v=igraph::V(g)) {
   vals
 }
 
-#' @examples
-#' ig.ex <- erdos.renyi.game(100, p.or.m=0.3) #generate an undirected 'igraph' object
-#' betweenness(ig.ex) #betweenness scores for each node in the graph
-#' keyplayer(ig.ex, k=10) #key-player set consisting of 10 actors
-#' bridging(ig.ex) #bridging scores for each node in the graph
-#' constraint(ig.ex) #constraint index for each node in the graph
-#' ens(ig.ex) #effective network size for each node in the graph

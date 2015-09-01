@@ -21,7 +21,11 @@ function allows the use of either the SNAP betweenness implementation (default),
 the igraph betweenness function. The SNAP version makes use of OpenMP for
 parallelization, and may be faster in some circumstances.
 }
-\seealso{
+\examples{
+ig.ex <- igraph::erdos.renyi.game(100, p.or.m=0.3) # generate an undirected 'igraph' object
+betweenness(ig.ex) # betweenness scores for each node in the graph
+}
+\references{
 \url{http://snap-graph.sourceforge.net/}
 }
 
