@@ -28,11 +28,11 @@ of a metric of node importance and a combinatorial optimization strategy to
 choose the set S of vertices of size k that maximize that metric.
 }
 \details{
-This function implements KPP-Pos, a metric intended to identify k actors that
+This function implements KPP-Pos, a metric intended to identify k nodes which
 optimize resource diffusion through the network. We sum over all vertices
 not in S the reciprocal of the shortest distance to a vertex in S.
 
-Borgatti claims that a number of off-the-shelf optimization algorithms may
+According to Borgatti, a number of off-the-shelf optimization algorithms may
 be suitable to find S, such as tabu-search, K-L, simulated annealing, or
 genetic algorithms. He presents a simple greedy algorithm, which we excerpt
 here:
@@ -50,7 +50,7 @@ here:
    \item Go to step 3.
 }
 
-This implementation uses a different optimization method which we call
+Our implementation uses a different optimization method which we call
 stochastic gradient descent. In tests on real world data, we found that
 our method discovered sets S with larger fits in less computation time.
 The algorithm is as follows:
