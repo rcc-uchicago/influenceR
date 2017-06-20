@@ -175,7 +175,7 @@ double get_next_state_graph(problem_t *this, int n, int *gen, int k, double p, i
 		u = s[int_rand() % k];
 #ifdef DEBUG
         // we want to match how we get a random v in the non-graph code. this sucks.
-		v = int_rand % n;
+		v = int_rand() % n;
 		while(gen[v] != 0)
 			v = (v + 1) % n;
 #else
