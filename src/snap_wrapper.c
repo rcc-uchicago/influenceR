@@ -230,6 +230,7 @@ SEXP snap_bridging_R(SEXP sE, SEXP sn, SEXP sm, SEXP sMPI, SEXP srank) {
 #endif
     if (REAL(sBC) == NULL) {
         REprintf("Rank %d: error!\n", rank);
+        UNPROTECT(1);
         return NULL;
     }
   }
