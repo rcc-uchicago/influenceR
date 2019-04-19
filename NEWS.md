@@ -1,0 +1,3 @@
+# NEWS
+
+Fixed RChecks package
