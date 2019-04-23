@@ -1,13 +1,16 @@
-## Note
-Added `UNPROTECT(1)` in function snap_bridging_R in `snap_wrapper.c` in response to email concerning PROTECT bug reports from rchk  received from CRAN .
-
-There is a note about possible spelling errors:
+## Resubmission
+In this version I have:
+* Added the author (year) <doi> references in the description. 
+* Updated the CRAN comments to be more reflective of the changes.
+* Added `revdep/` to `.gitignore`.
+* Registered dynamic routines in `nfluenceR/src/packagename_init.c`.
+* There is a note about possible spelling errors:
 Possibly mis-spelled words in DESCRIPTION:
   Borgatti (13:32)
   Fujimoto (14:39)
   Valente (14:27)
-
-These are author names and are spelled correcly.
+These are author names and are spelled correcly.  
+  
 ## Test environments
 * local OS X install, R 3.5.3
 * Scientific Linux 7.4, R 3.5.1
