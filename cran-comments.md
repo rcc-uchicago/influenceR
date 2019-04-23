@@ -1,5 +1,5 @@
 ## Note
-This is the first release of influenceR.
+Added `UNPROTECT(1)` in function snap_bridging_R in `snap_wrapper.c` in response to email concerning PROTECT bug reports from rchk  received from CRAN .
 
 ## Test environments
 * local OS X install, R 3.5.3
