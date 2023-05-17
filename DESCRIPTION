@@ -3,7 +3,7 @@ Title: Software Tools to Quantify Structural Importance of Nodes in a Network
 Version: 0.1.2
 Authors@R: c(
     person("Jacobs", "Simon", email = "sdjacobs@uchicago.edu", role = "aut"),
-    person("Khanna", "Aditya", email = "khanna7@uchicago.edu", role = c("aut", "cre")),
+    person("Khanna", "Aditya", email = "khanna7.work@gmail.com", role = c("aut", "cre")),
     person("Madduri", "Kamesh", email = "madduri@cse.psu.edu", role = "ctb"),
     person("Bader", "David", email = "bader@cc.gatech.edu", role = "ctb"))
 Description: Provides functionality to compute various node centrality measures on networks.
