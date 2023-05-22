@@ -247,7 +247,7 @@ constraint <- function(g, v=igraph::V(g)) {
     jqd <- Matrix::drop0(jqd)
     jqd@x <- (1 / jqd@x) * (1 / deg[i])
          
-    Sj <- Matrix::colSums(jqd)
+    Sj <- Matrix::rowSums(jqd)
   
     idx <- as.numeric(igraph::neighbors(g, i))
     Sj[idx] <- Sj[idx] + (1 / deg[i])
